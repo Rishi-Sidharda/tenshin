@@ -53,7 +53,7 @@ export default function Signin() {
 
     if (error) {
       setErrorMsg(error.message);
-    } else if (data?.user) {
+    } else {
       router.push("/dashboard"); // redirect after sign in
     }
   };
