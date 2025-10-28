@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "@excalidraw/excalidraw/index.css";
 // ✅ Import the utility function for element creation
 
@@ -62,7 +62,7 @@ export default function FixedRectBoard() {
         // Key Change: Set type to "text"
         type: "text",
         // Key Change: Add the content for the text element
-        text: `Hello Nigga`,
+        text: `Hello`,
         // Position the text randomly
         x: 200 + Math.random() * 200,
         y: 200 + Math.random() * 200,
@@ -89,6 +89,32 @@ export default function FixedRectBoard() {
     });
   }, [api]); // Recreate callback when 'api' changes
 
+  useEffect(() => {
+    // Only attach listener once Excalidraw API is available
+    if (!api) return;
+
+    const handleKeyDown = (event) => {
+      // Check for Ctrl (Windows/Linux) or Meta (Cmd on Mac) + /
+      const isControlKey = event.ctrlKey || event.metaKey;
+      const isForwardSlash = event.key === "/";
+
+      if (isControlKey && isForwardSlash) {
+        event.preventDefault(); // Stop default browser behavior (e.g., search)
+
+        // ✅ Call your central action function
+        handleCommandPallet();
+      }
+    };
+
+    // Attach the global event listener
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Clean up the event listener when the component unmounts or dependencies change
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [api, handleCommandPallet]);
+
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       {/* Left Sidebar (3% width) */}
@@ -114,7 +140,7 @@ export default function FixedRectBoard() {
                   top: "16px",
                   right: "16px",
                   zIndex: 10,
-                  background: "#2c2c2c",
+                  background: "#232329",
                   color: "white",
                   border: "none",
                   borderRadius: "8px",
