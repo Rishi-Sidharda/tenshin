@@ -78,7 +78,9 @@ export default function Board() {
           backgroundColor: "#1e1e1e",
           height: "100%",
         }}
-      ></div>
+      >
+        <h1>Left Bar</h1>
+      </div>
 
       <div style={{ position: "relative", width: "98%", height: "100vh" }}>
         <Excalidraw
