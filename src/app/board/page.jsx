@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import React, { useState, useEffect } from "react";
 import "@excalidraw/excalidraw/index.css";
 import { setExcalidrawApi, handleCommandPallet } from "./boardApi";
+import FloatingCard from "./floatingCard";
 
 const Excalidraw = dynamic(
   async () => (await import("@excalidraw/excalidraw")).Excalidraw,
@@ -26,6 +27,7 @@ const Excalidraw = dynamic(
 
 export default function Board() {
   const [api, setApi] = useState(null);
+  const [showCard, setShowCard] = useState(false);
 
   useEffect(() => {
     if (api) setExcalidrawApi(api);
@@ -56,16 +58,16 @@ export default function Board() {
           backgroundColor: "#1e1e1e",
           height: "100%",
         }}
-      >
-        <h1>Left Bar</h1>
-      </div>
+      ></div>
 
       <div style={{ position: "relative", width: "98%", height: "100vh" }}>
         <Excalidraw
           theme="dark"
           renderTopRightUI={() => (
             <button
-              onClick={handleCommandPallet}
+              onClick={() => {
+                setShowCard(true);
+              }}
               className="text-xs"
               style={{
                 top: "16px",
@@ -85,6 +87,18 @@ export default function Board() {
           )}
           excalidrawAPI={(excalidrawApi) => setApi(excalidrawApi)}
         />
+        {/* Floating Card */}
+        {showCard && (
+          <FloatingCard
+            title="Custom Floating Card"
+            onClose={() => setShowCard(false)}
+          >
+            <p style={{ opacity: 0.8 }}>
+              This is a reusable floating card component. You can add any JSX
+              content here — forms, controls, text, or even other components.
+            </p>
+          </FloatingCard>
+        )}
       </div>
     </div>
   );
