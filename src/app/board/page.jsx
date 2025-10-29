@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import "@excalidraw/excalidraw/index.css";
 import { setExcalidrawApi, handleCommandPallet } from "./boardApi";
 import FloatingCard from "./floatingCard";
+import CommandPallet from "./commandPallet";
 
 const Excalidraw = dynamic(
   async () => (await import("@excalidraw/excalidraw")).Excalidraw,
@@ -28,6 +29,7 @@ const Excalidraw = dynamic(
 export default function Board() {
   const [api, setApi] = useState(null);
   const [showCard, setShowCard] = useState(false);
+  const [showCommandPallet, setShowCommandPallet] = useState(false);
 
   useEffect(() => {
     if (api) setExcalidrawApi(api);
@@ -66,7 +68,7 @@ export default function Board() {
           renderTopRightUI={() => (
             <button
               onClick={() => {
-                setShowCard(true);
+                setShowCommandPallet(true);
               }}
               className="text-xs"
               style={{
@@ -88,6 +90,13 @@ export default function Board() {
           excalidrawAPI={(excalidrawApi) => setApi(excalidrawApi)}
         />
         {/* Floating Card */}
+        {showCommandPallet && (
+          <CommandPallet
+            onClose={() => {
+              setShowCommandPallet(false);
+            }}
+          />
+        )}
         {showCard && (
           <FloatingCard
             title="Custom Floating Card"
