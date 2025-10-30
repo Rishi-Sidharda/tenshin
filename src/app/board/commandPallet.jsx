@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-export default function CommandPallet({ onClose }) {
+export default function CommandPallet({ onClose, floatingNotionAction }) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function CommandPallet({ onClose }) {
     { label: "Open Dashboard", action: () => router.push("/dashboard") },
     { label: "New Note", action: () => router.push("/notes/new") },
     { label: "Search Docs", action: () => router.push("/docs") },
+    { label: "Floating Notion", action: () => floatingNotionAction?.() },
   ];
 
   const filtered = commands.filter((cmd) =>

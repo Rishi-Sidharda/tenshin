@@ -28,7 +28,7 @@ const Excalidraw = dynamic(
 
 export default function Board() {
   const [api, setApi] = useState(null);
-  const [showCard, setShowCard] = useState(false);
+  const [showFloatingNotion, setShowFloatingNotion] = useState(false);
   const [showCommandPallet, setShowCommandPallet] = useState(false);
 
   useEffect(() => {
@@ -95,18 +95,19 @@ export default function Board() {
             onClose={() => {
               setShowCommandPallet(false);
             }}
+            floatingNotionAction={() => setShowFloatingNotion(true)}
           />
         )}
-        {showCard && (
-          <FloatingCard
+        {showFloatingNotion && (
+          <FloatingNotion
             title="Custom Floating Card"
-            onClose={() => setShowCard(false)}
+            onClose={() => setShowFloatingNotion(false)}
           >
             <p style={{ opacity: 0.8 }}>
               This is a reusable floating card component. You can add any JSX
               content here — forms, controls, text, or even other components.
             </p>
-          </FloatingCard>
+          </FloatingNotion>
         )}
       </div>
     </div>
