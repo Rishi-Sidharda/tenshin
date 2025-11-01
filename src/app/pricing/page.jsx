@@ -56,7 +56,7 @@ const plans = [
       "Custom Domains",
     ],
     isHighlighted: true,
-    buttonText: "Start 14-day trial",
+    buttonText: "Get Started",
     buttonVariant: "primary",
   },
   {
@@ -73,7 +73,7 @@ const plans = [
       "Single Sign-On (SSO)",
     ],
     isHighlighted: false,
-    buttonText: "Contact Sales",
+    buttonText: "Contact Us",
     buttonVariant: "ghost",
   },
 ];
@@ -187,9 +187,9 @@ const PricingCard = ({ plan, billingCycle }) => {
       </ul>
 
       {/* Action Button */}
-      <button
-        className={`w-full py-3 rounded-xl font-semibold transition-colors duration-200 ${buttonClasses[buttonVariant]}`}
-        onClick={() => console.log(`Clicked ${name} Plan (${billingCycle})`)}
+      <button 
+        className={`w-full py-3 rounded-xl cursor-pointer font-semibold transition-colors duration-200 ${buttonClasses[buttonVariant]}`}
+        onClick={() => {}}
       >
         {buttonText}
       </button>
@@ -203,27 +203,10 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] relative">
-      {/* Soft Morning Mist Background */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `
-        linear-gradient(135deg, 
-          rgba(248,250,252,1) 0%, 
-          rgba(219,234,254,0.7) 30%, 
-          rgba(165,180,252,0.5) 60%, 
-          rgba(129,140,248,0.6) 100%
-        ),
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.6) 0%, transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(199,210,254,0.4) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(224,231,255,0.3) 0%, transparent 60%)
-      `,
-        }}
-      />
       <div
         className={`${geistMono.variable} font-sans min-h-screen bg-gray-50 dark:bg-gray-950 p-4 sm:p-8`}
       >
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           {/* Header Section */}
           <header className="text-center mb-10 pt-6">
             <h1 className="text-3xl sm:text-5xl font-extrabold text-black dark:text-white mb-4">
@@ -232,12 +215,6 @@ const Pricing = () => {
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Choose the plan that fits your needs and start building today.
             </p>
-
-            {/* Billing Toggle */}
-            <BillingToggle
-              billingCycle={billingCycle}
-              setBillingCycle={setBillingCycle}
-            />
           </header>
 
           {/* Pricing Grid */}
