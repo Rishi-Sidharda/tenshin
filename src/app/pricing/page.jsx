@@ -187,9 +187,8 @@ const PricingCard = ({ plan, billingCycle }) => {
       </ul>
 
       {/* Action Button */}
-      <button 
+      <button
         className={`w-full py-3 rounded-xl cursor-pointer font-semibold transition-colors duration-200 ${buttonClasses[buttonVariant]}`}
-        onClick={() => {}}
       >
         {buttonText}
       </button>

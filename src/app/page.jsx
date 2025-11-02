@@ -87,7 +87,7 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <div className="flex flex-col items-center justify-center flex-grow text-center px-6">
+      <div className="flex flex-col items-center justify-center   grow text-center px-6">
         <h2 className="text-4xl md:text-6xl font-bold font-mono mb-4">
           Where sketches meet structure.
         </h2>
