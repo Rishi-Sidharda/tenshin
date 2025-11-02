@@ -100,7 +100,6 @@ export default function Board() {
         )}
         {showFloatingNotion && (
           <FloatingNotion
-            title="Custom Floating Card"
             onClose={() => setShowFloatingNotion(false)}
           ></FloatingNotion>
         )}
