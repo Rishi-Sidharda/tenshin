@@ -10,32 +10,72 @@ import { Separator } from "@/components/ui/separator";
 export default function DashboardPage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [boards, setBoards] = useState({});
   const router = useRouter();
 
+  // Fetch current user
   useEffect(() => {
     const getUser = async () => {
       const { data } = await supabase.auth.getUser();
-      setUser(data?.user || null);
+      const currentUser = data?.user || null;
+      setUser(currentUser);
       setLoading(false);
+
+      if (!currentUser) {
+        // Redirect to signin if not logged in
+        window.location.href = "/signin";
+      }
     };
 
     getUser();
 
-    // listen for auth changes (login/logout)
-    const { data: listener } = supabase.auth.onAuthStateChange(
+    // Listen for auth changes
+    const { data: subscription } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setUser(session?.user || null);
+        if (session?.user) {
+          setUser(session.user);
+        } else {
+          setUser(null);
+          window.location.href = "/signin";
+        }
       }
     );
 
     return () => {
-      listener.subscription.unsubscribe();
+      subscription?.subscription?.unsubscribe();
     };
+  }, []); // ✅ empty dependency array – stable
+
+  // Load boards from localStorage
+  useEffect(() => {
+    const savedBoards = JSON.parse(localStorage.getItem("boards") || "{}");
+    setBoards(savedBoards);
   }, []);
+
+  const createNewBoard = () => {
+    const id = `board-${Date.now()}`;
+    const savedBoards = JSON.parse(localStorage.getItem("boards") || "{}");
+    savedBoards[id] = { name: id, elements: [], appState: {}, files: {} };
+    localStorage.setItem("boards", JSON.stringify(savedBoards));
+    setBoards(savedBoards);
+    router.push(`/board?id=${id}`);
+  };
+
+  const openBoard = (id) => {
+    router.push(`/board?id=${id}`);
+  };
+
+  const deleteBoard = (id) => {
+    const savedBoards = JSON.parse(localStorage.getItem("boards") || "{}");
+    delete savedBoards[id];
+    localStorage.setItem("boards", JSON.stringify(savedBoards));
+    setBoards(savedBoards);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.refresh();
+    setUser(null);
+    window.location.href = "/signin";
   };
 
   if (loading) {
@@ -46,55 +86,52 @@ export default function DashboardPage() {
     );
   }
 
-  if (!user) {
-    // Logged out state
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen text-center px-4">
-        <Card className="max-w-md w-full shadow-md p-8">
-          <h1 className="text-2xl font-bold mb-4">Welcome to Drowtion 👋</h1>
-          <p className="text-muted-foreground mb-6">
-            You need to be signed in to access your dashboard.
-          </p>
-          <Separator className="my-4" />
-          <Button onClick={() => router.push("/signin")}>Sign In</Button>
-        </Card>
-      </div>
-    );
-  }
+  if (!user) return null; // Safety fallback
 
-  // Logged in state
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-10">
-      <Card className="max-w-xl w-full shadow-lg p-10">
+    <div className="min-h-screen flex flex-col items-center px-6 py-10">
+      <Card className="max-w-2xl w-full shadow-lg p-8">
         <CardContent>
-          <h1 className="text-3xl font-bold mb-2">Hello, {user.email} 👋</h1>
-          <p className="text-muted-foreground mb-6">
-            Welcome back! Here’s your personalized dashboard.
-          </p>
-
-          <Separator className="my-6" />
-
-          <div className="space-y-4">
-            <div className="p-4 bg-muted rounded-xl">
-              <p className="font-medium text-foreground">Recent Activity</p>
-              <p className="text-sm text-muted-foreground">
-                (This is where you could show recent user data or updates.)
-              </p>
-            </div>
-
-            <div className="p-4 bg-muted rounded-xl">
-              <p className="font-medium text-foreground">Account Info</p>
-              <p className="text-sm text-muted-foreground">
-                User ID: {user.id}
-              </p>
-            </div>
-          </div>
-
-          <Separator className="my-6" />
-
-          <Button variant="destructive" onClick={handleLogout}>
+          <h1 className="text-2xl font-bold mb-2">Hello, {user.email} 👋</h1>
+          <Button className="mt-2 cursor-pointer" onClick={handleLogout}>
             Log out
           </Button>
+
+          <Separator className="my-6" />
+
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Your Boards</h2>
+            <Button onClick={createNewBoard}>+ New Board</Button>
+          </div>
+
+          {Object.keys(boards).length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              No boards yet. Create one above!
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {Object.keys(boards).map((id) => (
+                <div
+                  key={id}
+                  className="flex justify-between items-center bg-muted p-3 rounded-lg"
+                >
+                  <span>{boards[id].name}</span>
+                  <div className="space-x-2">
+                    <Button size="sm" onClick={() => openBoard(id)}>
+                      Open
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => deleteBoard(id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
