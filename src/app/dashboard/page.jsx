@@ -6,11 +6,15 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [boards, setBoards] = useState({});
+  const [editingBoardId, setEditingBoardId] = useState(null);
+  const [newBoardName, setNewBoardName] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
   // Fetch current user
@@ -21,15 +25,11 @@ export default function DashboardPage() {
       setUser(currentUser);
       setLoading(false);
 
-      if (!currentUser) {
-        // Redirect to signin if not logged in
-        window.location.href = "/signin";
-      }
+      if (!currentUser) window.location.href = "/signin";
     };
 
     getUser();
 
-    // Listen for auth changes
     const { data: subscription } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (session?.user) {
@@ -41,28 +41,31 @@ export default function DashboardPage() {
       }
     );
 
-    return () => {
-      subscription?.subscription?.unsubscribe();
-    };
-  }, []); // ✅ empty dependency array – stable
+    return () => subscription?.subscription?.unsubscribe();
+  }, []);
 
-  // Load boards from localStorage
+  // Load boards
   useEffect(() => {
     const savedBoards = JSON.parse(localStorage.getItem("boards") || "{}");
     setBoards(savedBoards);
   }, []);
 
   const createNewBoard = () => {
-    const id = `board-${Date.now()}`;
+    const defaultName = `Untitled-${Date.now()}`;
     const savedBoards = JSON.parse(localStorage.getItem("boards") || "{}");
-    savedBoards[id] = { name: id, elements: [], appState: {}, files: {} };
+    savedBoards[defaultName] = {
+      name: defaultName,
+      elements: [],
+      appState: {},
+      files: {},
+    };
     localStorage.setItem("boards", JSON.stringify(savedBoards));
     setBoards(savedBoards);
-    router.push(`/board?id=${id}`);
+    router.push(`/board?id=${encodeURIComponent(defaultName)}`);
   };
 
   const openBoard = (id) => {
-    router.push(`/board?id=${id}`);
+    router.push(`/board?id=${encodeURIComponent(id)}`);
   };
 
   const deleteBoard = (id) => {
@@ -70,6 +73,44 @@ export default function DashboardPage() {
     delete savedBoards[id];
     localStorage.setItem("boards", JSON.stringify(savedBoards));
     setBoards(savedBoards);
+  };
+
+  // ✅ Start renaming
+  const startRenaming = (id, currentName) => {
+    setEditingBoardId(id);
+    setNewBoardName(currentName);
+    setErrorMessage("");
+  };
+
+  // ✅ Save renamed board (persistent + unique)
+  const saveBoardName = (oldId) => {
+    const trimmed = newBoardName.trim();
+    if (!trimmed) return setErrorMessage("Board name cannot be empty.");
+
+    const savedBoards = JSON.parse(localStorage.getItem("boards") || "{}");
+
+    // Check for duplicate name
+    if (savedBoards[trimmed] && trimmed !== oldId) {
+      setErrorMessage(
+        "A board with that name already exists. Try another name."
+      );
+      return;
+    }
+
+    // Copy existing data and rename the key
+    const boardData = savedBoards[oldId];
+    delete savedBoards[oldId];
+    savedBoards[trimmed] = {
+      ...boardData,
+      name: trimmed,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Save changes
+    localStorage.setItem("boards", JSON.stringify(savedBoards));
+    setBoards(savedBoards);
+    setEditingBoardId(null);
+    setErrorMessage("");
   };
 
   const handleLogout = async () => {
@@ -86,7 +127,7 @@ export default function DashboardPage() {
     );
   }
 
-  if (!user) return null; // Safety fallback
+  if (!user) return null;
 
   return (
     <div className="min-h-screen flex flex-col items-center px-6 py-10">
@@ -110,26 +151,65 @@ export default function DashboardPage() {
             </p>
           ) : (
             <div className="space-y-3">
-              {Object.keys(boards).map((id) => (
-                <div
-                  key={id}
-                  className="flex justify-between items-center bg-muted p-3 rounded-lg"
-                >
-                  <span>{boards[id].name}</span>
-                  <div className="space-x-2">
-                    <Button size="sm" onClick={() => openBoard(id)}>
-                      Open
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => deleteBoard(id)}
-                    >
-                      Delete
-                    </Button>
+              {Object.keys(boards).map((id) => {
+                const board = boards[id];
+                const isEditing = editingBoardId === id;
+
+                return (
+                  <div
+                    key={id}
+                    className="flex justify-between items-center bg-muted p-3 rounded-lg"
+                  >
+                    {isEditing ? (
+                      <div className="flex items-center space-x-2 w-full">
+                        <Input
+                          value={newBoardName}
+                          onChange={(e) => setNewBoardName(e.target.value)}
+                          className="flex-1"
+                          autoFocus
+                        />
+                        <Button size="sm" onClick={() => saveBoardName(id)}>
+                          Save
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => setEditingBoardId(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="truncate">{board.name}</span>
+                        <div className="space-x-2">
+                          <Button size="sm" onClick={() => openBoard(id)}>
+                            Open
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => startRenaming(id, board.name)}
+                          >
+                            Rename
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => deleteBoard(id)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
+
+              {errorMessage && (
+                <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+              )}
             </div>
           )}
         </CardContent>

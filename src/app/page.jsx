@@ -98,7 +98,7 @@ export default function Home() {
 
         <div className="flex space-x-4">
           <button
-            onClick={() => router.push("/board")}
+            onClick={() => router.push("/dashboard")}
             className="px-6 py-3 bg-white text-black font-semibold font-mono cursor-pointer hover:opacity-90 transition"
           >
             Try Now
