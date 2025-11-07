@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { drawExcalidrawElements } from "./boardApi";
 
 export default function CommandPallet({ onClose, floatingNotionAction }) {
   const [query, setQuery] = useState("");
@@ -12,9 +13,8 @@ export default function CommandPallet({ onClose, floatingNotionAction }) {
   const commands = [
     { label: "Go to Home", action: () => router.push("/") },
     { label: "Open Dashboard", action: () => router.push("/dashboard") },
-    { label: "New Note", action: () => router.push("/notes/new") },
-    { label: "Search Docs", action: () => router.push("/docs") },
     { label: "Floating Notion", action: () => floatingNotionAction?.() },
+    { label: "Draw", action: () => drawExcalidrawElements?.() },
   ];
 
   const filtered = commands.filter((cmd) =>
