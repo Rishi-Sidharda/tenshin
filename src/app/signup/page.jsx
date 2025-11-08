@@ -58,22 +58,25 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center bg-[#121212]  justify-center min-h-screen">
       <div
         className={`flex flex-1 flex-col justify-center items-center px-4 py-10 lg:px-6 ${geistMono.variable} font-mono`}
       >
-        <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg border p-10">
+        <div className="w-full max-w-xl bg-[#1a1a1a]  rounded-2xl shadow-black shadow-2xl p-10">
           <div className="flex items-center space-x-1.5">
-            <p className="font-extrabold text-3xl text-foreground">Drowtion</p>
+            <div className="w-8 h-8 bg-white rounded-full mr-2 flex items-center justify-center">
+              <img src="/logo_sm.svg" className="rounded-md" alt="" />
+            </div>
+            <p className="font-extrabold text-3xl text-white">Tenshin</p>
           </div>
-          <h3 className="mt-6 text-lg font-semibold text-foreground">
+          <h3 className="mt-6 text-lg font-semibold text-white">
             Create your Account
           </h3>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm text-white">
             Already have an account?{" "}
             <a
               href="/signin"
-              className="font-medium text-primary hover:text-primary/90"
+              className="font-medium text-[#ff8383] hover:text-[#ff8383]/50"
             >
               Sign in
             </a>
@@ -81,16 +84,14 @@ export default function SignupPage() {
 
           <div className="mt-8 flex flex-col items-center space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0">
             <Button
-              variant="outline"
-              className="flex-1 items-center justify-center space-x-2 py-2"
+              className="flex-1 cursor-pointer bg-[#2a2a2a] focus:bg-[#ff8383] hover:bg-[#ff8383] space-x-2 py-2"
               onClick={signInWithGitHub}
             >
               <GitHubIcon className="size-5" aria-hidden={true} />
               <span className="text-sm font-medium">Signup with GitHub</span>
             </Button>
             <Button
-              variant="outline"
-              className="mt-2 flex-1 items-center justify-center space-x-2 py-2 sm:mt-0"
+              className="flex-1 cursor-pointer bg-[#2a2a2a] focus:bg-[#ff8383] hover:bg-[#ff8383] space-x-2 py-2"
               onClick={signInWithGoogle}
             >
               <GoogleIcon className="size-4" aria-hidden={true} />
@@ -99,11 +100,11 @@ export default function SignupPage() {
           </div>
 
           <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
+            <div className="absolute inset-0  flex items-center">
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-[#1a1a1a] px-2 text-muted-foreground">
                 or
               </span>
             </div>
@@ -111,27 +112,37 @@ export default function SignupPage() {
 
           <form onSubmit={handleSignup} className="mt-6 space-y-4">
             <div>
-              <Label htmlFor="email-login-04">Email</Label>
+              <Label
+                className="text-sm text-white font-medium"
+                htmlFor="email-login-04"
+              >
+                Email
+              </Label>
               <Input
                 type="email"
                 id="email-login-04"
                 name="email-login-04"
                 autoComplete="email"
-                placeholder="ephraim@blocks.so"
+                placeholder="ok@tenshin.app"
                 required
-                className="mt-2"
+                className="mt-2 text-white border-[#2a2a2a] border-2 rounded-md"
               />
             </div>
             <div>
-              <Label htmlFor="password-login-04">Password</Label>
+              <Label
+                className="text-sm text-white font-medium"
+                htmlFor="password-login-04"
+              >
+                Password
+              </Label>
               <Input
                 type="password"
                 id="password-login-04"
                 name="password-login-04"
                 autoComplete="password"
-                placeholder="********"
+                placeholder="not1234"
                 required
-                className="mt-2"
+                className="mt-2 text-white border-[#2a2a2a] border-2 rounded-md"
               />
             </div>
 
@@ -139,7 +150,7 @@ export default function SignupPage() {
 
             <Button
               type="submit"
-              className="cursor-pointer mt-4 w-full py-2 font-medium"
+              className="mt-4 w-full py-2 font-medium bg-[#2a2a2a] hover:bg-[#ff8383] focus:bg-[#ff8383] cursor-pointer"
               disabled={loading}
             >
               {loading ? "Creating..." : "Create Account"}

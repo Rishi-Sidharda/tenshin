@@ -77,10 +77,10 @@ export default function Home() {
         {/* Desktop Login */}
         <div className="hidden md:block">
           <a
-            href="/login"
+            href="/signin"
             className="text-white font-semibold hover:underline transition-all"
           >
-            Log In
+            Sign in
           </a>
         </div>
 
