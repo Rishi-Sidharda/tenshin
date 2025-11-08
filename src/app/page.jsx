@@ -1,15 +1,35 @@
 "use client";
+import { useState, useEffect } from "react";
 import FloatingImage from "./floatingImage";
 import Pricing from "./pricingPage";
+import { FaArrowUp } from "react-icons/fa"; // Using react-icons for the up arrow
 
 export default function Home() {
+  const [showScroll, setShowScroll] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setShowScroll(scrollTop > 100); // Show button after scrolling 100px
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <div className="min-h-screen w-full bg-[#121212] text-white font-sans">
+    <div className="min-h-screen w-full bg-[#121212] text-white font-sans relative">
+      {/* Floating Images */}
       <FloatingImage src="file.svg" size={120} speed={0.7} />
       <FloatingImage src="next.svg" size={120} speed={0.7} />
       <FloatingImage src="vercel.svg" size={120} speed={0.7} />
       <FloatingImage src="globe.svg" size={120} speed={0.7} />
       <FloatingImage src="window.svg" size={120} speed={0.7} />
+
       {/* Navbar */}
       <nav className="flex items-center font-mono justify-between px-8 py-6 relative">
         {/* Left: Logo */}
@@ -91,11 +111,13 @@ export default function Home() {
           }
         `}</style>
 
-        <p className="text-gray-400 text-lg font-mono md:text-xl mb-8 max-w-2xl">
+        <p className="text-gray-400 text-lg font-mono md:text-xl max-w-2xl">
           "From doodles to documentation, your ideas live here."
         </p>
-        <div></div>
-        <div className="flex space-x-4 font-mono">
+        <p className="text-gray-400 text-lg font-mono md:text-xl mb-8 max-w-2xl">
+          "Excalidraw + Markdown = Tenshin [Second brain]"
+        </p>
+        <div className="flex space-x-4 mt-10 font-mono">
           <a
             href="#get-started"
             className="bg-white text-black rounded-full px-8 py-4 font-semibold text-lg hover:bg-[#ff8383] transition-colors"
@@ -111,6 +133,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Features Section */}
       <section
         id="features"
         className="font-mono opacity-100  mt-[5vh] py-20 px-8 max-w-6xl mx-auto"
@@ -149,6 +172,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Pricing Section */}
       <section id="pricing" className="h-screen">
         <Pricing />
       </section>
@@ -157,6 +181,16 @@ export default function Home() {
       <footer className="py-8 text-center text-gray-500 text-sm">
         © {new Date().getFullYear()} Tenshin. All rights reserved.
       </footer>
+
+      {/* Scroll to Top Button */}
+      {showScroll && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 cursor-pointer right-8 p-4 rounded-full bg-[#ff8383] text-white shadow-lg hover:bg-[#ff4c4c] transition-colors z-50"
+        >
+          <FaArrowUp />
+        </button>
+      )}
     </div>
   );
 }
