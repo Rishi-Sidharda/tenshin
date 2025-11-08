@@ -117,12 +117,12 @@ const PricingCard = ({ plan, billingCycle }) => {
   const interval = billingCycle === "monthly" ? "/month" : "/year";
 
   const cardClasses = isHighlighted
-    ? "bg-[#121212] shadow-2xl ring-4 ring-[#ff8383]/50 scale-[1.02] transform max-w-sm mx-auto"
-    : "bg-[#121212] shadow-xl hover:shadow-2xl hover:scale-[1.01] transition-all duration-300 max-w-sm mx-auto";
+    ? "bg-[#1a1a1a] shadow-2xl ring-4 ring-[#ff8383]/50 scale-[1.02] transform max-w-sm mx-auto"
+    : "bg-[#1a1a1a] shadow-xl hover:shadow-2xl hover:scale-[1.01] transition-all duration-300 max-w-sm mx-auto";
 
   const buttonClasses = {
     primary: "bg-[#ff8383] text-white hover:bg-[#ff6666]",
-    secondary: "bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]",
+    secondary: "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]",
   };
 
   return (
@@ -165,7 +165,7 @@ const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState("monthly");
 
   return (
-    <div className="min-h-screen w-full bg-[#1a1a1a] relative">
+    <div className="min-h-screen w-full bg-[#101010] relative">
       <div
         className={`${geistMono.variable} font-sans min-h-screen p-4 sm:p-8`}
       >
