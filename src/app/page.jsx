@@ -1,116 +1,113 @@
 "use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ Import router
-import { Menu, X } from "lucide-react";
+import Pricing from "./pricing/page";
 
 export default function Home() {
-  const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter(); // ✅ Initialize router
-
   return (
-    <div className="bg-[#121212] min-h-screen text-white flex flex-col">
+    <div className="min-h-screen w-full bg-[#121212] text-white font-sans">
       {/* Navbar */}
-      <nav className="flex items-center font-mono justify-between px-8 py-4 border-b border-gray-800">
-        <h1
-          className="text-2xl font-bold tracking-wide cursor-pointer"
-          onClick={() => router.push("/")}
-        >
-          FusionBoard
-        </h1>
+      <nav className="flex items-center font-mono justify-between px-8 py-6 relative">
+        {/* Left: Logo */}
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span className="text-black font-bold">T</span>
+          </div>
+          <span className="font-semibold font-mono text-lg">Tenshin</span>
+        </div>
 
-        <ul className="hidden md:flex space-x-8 text-gray-300">
-          <li
-            className="hover:text-white transition-colors cursor-pointer"
-            onClick={() => router.push("/")}
-          >
-            Home
-          </li>
-          <li
-            className="hover:text-white transition-colors cursor-pointer"
-            onClick={() => router.push("/features")}
+        {/* Center: Links */}
+        <div className="absolute left-1/2 transform -translate-x-1/2 space-x-6 flex items-center">
+          <a
+            href="#features"
+            className="text-gray-400 hover:text-[#ff8383] transition-colors"
           >
             Features
-          </li>
-          <li
-            className="hover:text-white transition-colors cursor-pointer"
-            onClick={() => router.push("/pricing")}
+          </a>
+          <a
+            href="#pricing"
+            className="text-gray-400 hover:text-[#ff8383] transition-colors"
           >
             Pricing
-          </li>
-          <li
-            className="hover:text-white transition-colors cursor-pointer"
-            onClick={() => router.push("/contact")}
+          </a>
+          <a
+            href="/dashboard"
+            className="text-gray-400 hover:text-[#ff8383] transition-colors"
           >
-            Contact
-          </li>
-        </ul>
+            Dashboard
+          </a>
+        </div>
 
-        <button
-          className="md:hidden text-gray-300 hover:text-white transition-colors"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
+        {/* Right: Log In */}
+        <div>
+          <a
+            href="/login"
+            className="text-white font-semibold hover:underline transition-all"
+          >
+            Log In
+          </a>
+        </div>
       </nav>
 
-      {/* Mobile Dropdown */}
-      {isOpen && (
-        <div className="md:hidden bg-[#1a1a1a] border-b border-gray-800">
-          <ul className="flex flex-col space-y-4 px-8 py-4 text-gray-300">
-            <li
-              className="hover:text-white transition-colors cursor-pointer"
-              onClick={() => router.push("/")}
-            >
-              Home
-            </li>
-            <li
-              className="hover:text-white transition-colors cursor-pointer"
-              onClick={() => router.push("/")}
-            >
-              Features
-            </li>
-            <li
-              className="hover:text-white transition-colors cursor-pointer"
-              onClick={() => router.push("/pricing")}
-            >
-              Pricing
-            </li>
-            <li
-              className="hover:text-white transition-colors cursor-pointer"
-              onClick={() => router.push("/")}
-            >
-              Contact
-            </li>
-          </ul>
-        </div>
-      )}
-
       {/* Hero Section */}
-      <div className="flex flex-col items-center justify-center   grow text-center px-6">
-        <h2 className="text-4xl md:text-6xl font-bold font-mono mb-4">
-          Where sketches meet structure.
-        </h2>
-        <p className="text-gray-400 text-lg font-mono md:text-xl max-w-xl mb-8">
-          A collaborative canvas that fuses the freedom of Excalidraw with the
-          organization of Notion.
+      <section className="flex  flex-col items-center justify-center text-center mt-[15vh] px-4">
+        <h1 className="text-5xl font-mono md:text-7xl font-bold mb-6 leading-normal">
+          Draw Your Thoughts <br /> Write Your Mind_
+        </h1>
+        <p className="text-gray-400 text-lg font-mono md:text-xl mb-8 max-w-2xl">
+          "From doodles to documentation, your ideas live here."
         </p>
-
-        <div className="flex space-x-4">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="px-6 py-3 bg-white text-black font-semibold font-mono cursor-pointer hover:opacity-90 transition"
+        <div></div>
+        <div className="flex space-x-4 font-mono">
+          <a
+            href="#get-started"
+            className="bg-white text-black px-8 py-4 font-semibold text-lg hover:bg-gray-200 transition-colors"
           >
-            Try Now
-          </button>
-          <button
-            onClick={() => router.push("/pricing")}
-            className="px-6 py-3 border border-white text-white font-semibold font-mono cursor-pointer hover:bg-white hover:text-black transition"
+            Get Started
+          </a>
+          <a
+            href="#features"
+            className="bg-gray-800 text-white px-8 py-4 font-semibold text-lg hover:bg-gray-700 transition-colors"
           >
-            Lock In
-          </button>
+            Why Tenshin
+          </a>
         </div>
-      </div>
+      </section>
+
+      {/* Optional Features Section */}
+      <section
+        id="features"
+        className="font-mono h-screen mt-[10vh] py-20 px-8 max-w-6xl mx-auto"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-[#1A1A1A] p-6 rounded-xl shadow-lg text-center">
+            <h3 className="text-xl font-semibold mb-4">
+              Realtime Collaboration
+            </h3>
+            <p className="text-gray-400">
+              Work with your team in real-time, just like Google Docs.
+            </p>
+          </div>
+          <div className="bg-[#1A1A1A] p-6 rounded-xl shadow-lg text-center">
+            <h3 className="text-xl font-semibold mb-4">Easy Exports</h3>
+            <p className="text-gray-400">
+              Export diagrams as PNG, SVG, or shareable links.
+            </p>
+          </div>
+          <div className="bg-[#1A1A1A] p-6 rounded-xl shadow-lg text-center">
+            <h3 className="text-xl font-semibold mb-4">Custom Themes</h3>
+            <p className="text-gray-400">
+              Customize colors, fonts, and styles for your diagrams.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="pricing" className="h-screen">
+        <Pricing />
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 text-center text-gray-500 text-sm">
+        © {new Date().getFullYear()} Tenshin. All rights reserved.
+      </footer>
     </div>
   );
 }

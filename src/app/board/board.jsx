@@ -125,6 +125,17 @@ export default function Board() {
         <Excalidraw
           theme="dark"
           excalidrawAPI={(excalidrawApi) => setApi(excalidrawApi)}
+          UIOptions={{
+            canvasActions: {
+              // keeps the other buttons
+              changeColor: true,
+            },
+            renderCustomUI: true,
+          }}
+          defaultOptions={{
+            elementBackgroundColor: "red", // sets default element color
+            primaryColor: "red", // sets the primary theme color to red
+          }}
           renderTopRightUI={() => (
             <button
               onClick={() => setShowCommandPallet(true)}

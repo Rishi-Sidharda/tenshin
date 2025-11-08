@@ -165,7 +165,7 @@ const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState("monthly");
 
   return (
-    <div className="min-h-screen w-full bg-[#101010] relative">
+    <div className="min-h-screen w-full bg-[#121212] relative">
       <div
         className={`${geistMono.variable} font-sans min-h-screen p-4 sm:p-8`}
       >
