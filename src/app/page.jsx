@@ -35,7 +35,7 @@ export default function Home() {
       <FloatingImage src="window.svg" size={120} speed={0.7} />
 
       {/* Navbar */}
-      <nav className="flex items-center justify-between px-4 md:px-8 py-6 relative">
+      <nav className="flex items-center font-mono justify-between px-4 md:px-8 py-6 relative">
         {/* Logo */}
         <div className="flex  items-center space-x-2">
           <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
@@ -158,10 +158,10 @@ export default function Home() {
           }
         `}</style>
 
-        <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-xs sm:max-w-xl md:max-w-2xl">
+        <p className="font-mono text-gray-400 text-base sm:text-lg md:text-xl max-w-xs sm:max-w-xl md:max-w-2xl">
           "From doodles to documentation, your ideas live here."
         </p>
-        <p className="text-gray-400 text-base sm:text-lg md:text-xl mb-8 max-w-xs sm:max-w-xl md:max-w-2xl">
+        <p className="font-mono text-gray-400 text-base sm:text-lg md:text-xl mb-8 max-w-xs sm:max-w-xl md:max-w-2xl">
           "Excalidraw + Markdown = Tenshin [Second brain]"
         </p>
 
