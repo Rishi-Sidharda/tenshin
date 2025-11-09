@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import FloatingImage from "./floatingImage";
+import FloatingImage from "../components/ui/floatingImage";
 import Pricing from "./pricing/page";
+import Footer from "@/components/ui/footer";
 import { FaArrowUp, FaBars, FaTimes } from "react-icons/fa";
 
 export default function Home() {
@@ -232,9 +233,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 text-center text-gray-500 text-sm px-4 sm:px-8">
-        © {new Date().getFullYear()} Tenshin. All rights reserved.
-      </footer>
+      <Footer />
 
       {/* Scroll to Top Button */}
       {showScroll && (

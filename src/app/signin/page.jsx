@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Geist_Mono } from "next/font/google";
-import FloatingImage from "../floatingImage";
+import FloatingImage from "../../components/ui/floatingImage";
 import {
   signInWithGitHub,
   signInWithGoogle,
