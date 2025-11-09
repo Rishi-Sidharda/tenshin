@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Geist_Mono } from "next/font/google";
 import FloatingImage from "../../components/ui/floatingImage";
+import Footer from "@/components/ui/footer";
 import {
   signInWithGitHub,
   signInWithGoogle,
@@ -60,123 +61,132 @@ export default function Signin() {
   };
 
   return (
-    <div className="flex items-center bg-[#121212] justify-center min-h-screen">
-      <div
-        className={`flex flex-1 z-20 flex-col justify-center items-center px-4 py-10 lg:px-6 ${geistMono.variable} font-mono`}
-      >
-        <div className="w-full max-w-xl bg-[#1a1a1a]  rounded-2xl shadow-black shadow-2xl p-10">
+    <main>
+      <section>
+        <div className="flex items-center bg-[#121212] justify-center min-h-screen">
           <div
-            onClick={() => {
-              window.location.href = "/";
-            }}
-            className="flex cursor-pointer items-center space-x-1.5"
+            className={`flex flex-1 z-20 flex-col justify-center items-center px-4 py-10 lg:px-6 ${geistMono.variable} font-mono`}
           >
-            <div className="w-8 h-8 bg-white rounded-full mr-2 flex items-center justify-center">
-              <img src="/logo_sm.svg" className="rounded-md" alt="" />
-            </div>
-            <p className="font-extrabold text-3xl text-white">Tenshin</p>
-          </div>
-          <h3 className="mt-6 text-lg font-semibold text-white">
-            Sign in to your account
-          </h3>
-          <p className="mt-2 text-sm text-white">
-            Don&apos;t have an account?{" "}
-            <a
-              href="/signup"
-              className="font-medium text-[#ff8383]  hover:text-[#ff8484]/50"
-            >
-              Sign up
-            </a>
-          </p>
-
-          <div className="mt-8 flex flex-col items-center space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0">
-            <Button
-              className="flex-1 bg-[#2a2a2a] focus:bg-[#ff8383] hover:bg-[#ff8383] space-x-2 py-2"
-              asChild
-            >
-              <a href="#" onClick={signInWithGitHub}>
-                <GitHubIcon className="size-5" />
-                <span className="text-sm font-medium">Login with GitHub</span>
-              </a>
-            </Button>
-            <Button
-              className="flex-1 bg-[#2a2a2a] focus:bg-[#ff8383] hover:bg-[#ff8383] space-x-2 py-2"
-              asChild
-            >
-              <a href="#" onClick={signInWithGoogle}>
-                <GoogleIcon className="size-4" />
-                <span className="text-sm font-medium">Login with Google</span>
-              </a>
-            </Button>
-          </div>
-
-          <div className="relative my-6">
-            <div className="absolute inset-0  flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[#1a1a1a] px-2 text-muted-foreground">
-                or
-              </span>
-            </div>
-          </div>
-
-          <form onSubmit={handleSignin} className="mt-6 space-y-4">
-            <div>
-              <Label
-                htmlFor="email-login-04"
-                className="text-sm text-white font-medium"
+            <div className="w-full max-w-xl bg-[#1a1a1a]  rounded-2xl shadow-black shadow-2xl p-10">
+              <div
+                onClick={() => {
+                  window.location.href = "/";
+                }}
+                className="flex cursor-pointer items-center space-x-1.5"
               >
-                Email
-              </Label>
-              <Input
-                type="email"
-                id="email-login-04"
-                name="email-login-04"
-                required
-                placeholder="ok@tenshin.app"
-                className="mt-2 text-white border-[#2a2a2a] border-2 rounded-md"
-              />
+                <div className="w-8 h-8 bg-white rounded-full mr-2 flex items-center justify-center">
+                  <img src="/logo_sm.svg" className="rounded-md" alt="" />
+                </div>
+                <p className="font-extrabold text-3xl text-white">Tenshin</p>
+              </div>
+              <h3 className="mt-6 text-lg font-semibold text-white">
+                Sign in to your account
+              </h3>
+              <p className="mt-2 text-sm text-white">
+                Don&apos;t have an account?{" "}
+                <a
+                  href="/signup"
+                  className="font-medium text-[#ff8383]  hover:text-[#ff8484]/50"
+                >
+                  Sign up
+                </a>
+              </p>
+
+              <div className="mt-8 flex flex-col items-center space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0">
+                <Button
+                  className="flex-1 bg-[#2a2a2a] focus:bg-[#ff8383] hover:bg-[#ff8383] space-x-2 py-2"
+                  asChild
+                >
+                  <a href="#" onClick={signInWithGitHub}>
+                    <GitHubIcon className="size-5" />
+                    <span className="text-sm font-medium">
+                      Login with GitHub
+                    </span>
+                  </a>
+                </Button>
+                <Button
+                  className="flex-1 bg-[#2a2a2a] focus:bg-[#ff8383] hover:bg-[#ff8383] space-x-2 py-2"
+                  asChild
+                >
+                  <a href="#" onClick={signInWithGoogle}>
+                    <GoogleIcon className="size-4" />
+                    <span className="text-sm font-medium">
+                      Login with Google
+                    </span>
+                  </a>
+                </Button>
+              </div>
+
+              <div className="relative my-6">
+                <div className="absolute inset-0  flex items-center">
+                  <Separator className="w-full" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-[#1a1a1a] px-2 text-muted-foreground">
+                    or
+                  </span>
+                </div>
+              </div>
+
+              <form onSubmit={handleSignin} className="mt-6 space-y-4">
+                <div>
+                  <Label
+                    htmlFor="email-login-04"
+                    className="text-sm text-white font-medium"
+                  >
+                    Email
+                  </Label>
+                  <Input
+                    type="email"
+                    id="email-login-04"
+                    name="email-login-04"
+                    required
+                    placeholder="ok@tenshin.app"
+                    className="mt-2 text-white border-[#2a2a2a] border-2 rounded-md"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="password-login-04"
+                    className="text-sm text-white font-medium"
+                  >
+                    Password
+                  </Label>
+                  <Input
+                    type="password"
+                    id="password-login-04"
+                    name="password-login-04"
+                    required
+                    placeholder="not1234"
+                    className="mt-2 text-white border-[#2a2a2a] border-2 rounded-md"
+                  />
+                </div>
+
+                {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
+
+                <Button
+                  type="submit"
+                  className="mt-4 w-full py-2 font-medium bg-[#2a2a2a] hover:bg-[#ff8383] focus:bg-[#ff8383] cursor-pointer"
+                  disabled={loading}
+                >
+                  {loading ? "Signing in..." : "Sign in"}
+                </Button>
+              </form>
+
+              <p className="mt-6 text-sm text-muted-foreground">
+                Forgot your password?{" "}
+                <a
+                  href="#"
+                  className="font-medium text-[#ff8383] hover:text-[#ff8383]/50"
+                >
+                  Reset password
+                </a>
+              </p>
             </div>
-            <div>
-              <Label
-                htmlFor="password-login-04"
-                className="text-sm text-white font-medium"
-              >
-                Password
-              </Label>
-              <Input
-                type="password"
-                id="password-login-04"
-                name="password-login-04"
-                required
-                placeholder="not1234"
-                className="mt-2 text-white border-[#2a2a2a] border-2 rounded-md"
-              />
-            </div>
-
-            {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
-
-            <Button
-              type="submit"
-              className="mt-4 w-full py-2 font-medium bg-[#2a2a2a] hover:bg-[#ff8383] focus:bg-[#ff8383] cursor-pointer"
-              disabled={loading}
-            >
-              {loading ? "Signing in..." : "Sign in"}
-            </Button>
-          </form>
-
-          <p className="mt-6 text-sm text-muted-foreground">
-            Forgot your password?{" "}
-            <a
-              href="#"
-              className="font-medium text-[#ff8383] hover:text-[#ff8383]/50"
-            >
-              Reset password
-            </a>
-          </p>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+      <Footer />
+    </main>
   );
 }

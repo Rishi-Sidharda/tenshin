@@ -233,7 +233,9 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <Footer />
+      <div className="mt-20">
+        <Footer />
+      </div>
 
       {/* Scroll to Top Button */}
       {showScroll && (

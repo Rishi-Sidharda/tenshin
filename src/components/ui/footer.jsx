@@ -4,7 +4,7 @@ import { FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#121212] font-mono text-gray-300 border-t border-[#ff8383]/30 mt-20">
+    <footer className="bg-[#121212] font-mono text-gray-300 border-t border-[#ff8383]/30">
       <div className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center text-center md:text-left">
         {/* Logo + Name */}
         <Link
