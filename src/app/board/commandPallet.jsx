@@ -21,6 +21,14 @@ export default function CommandPallet({ onClose, floatingNotionAction }) {
     cmd.label.toLowerCase().includes(query.toLowerCase())
   );
 
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   // keyboard navigation
   useEffect(() => {
     const handleKey = (e) => {
@@ -69,7 +77,7 @@ export default function CommandPallet({ onClose, floatingNotionAction }) {
         {/* Search input */}
         <div className="border-b border-[#2A2A2A] px-4 py-3">
           <input
-            autoFocus
+            ref={inputRef}
             type="text"
             placeholder="Type a command or search..."
             value={query}

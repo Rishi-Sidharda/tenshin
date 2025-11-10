@@ -96,6 +96,7 @@ export default function DashboardPage() {
     localStorage.setItem("boards", JSON.stringify(savedBoards));
     setBoards(savedBoards);
     setEditingBoardId(null);
+    setErrorMessage("");
   };
 
   const startEditingEmoji = (id, currentEmoji) => {
@@ -104,9 +105,9 @@ export default function DashboardPage() {
     setMenuState({ open: false, x: 0, y: 0, boardId: null });
   };
 
-  const saveEmoji = (id) => {
+  const saveEmoji = (id, emoji) => {
     const savedBoards = JSON.parse(localStorage.getItem("boards") || "{}");
-    savedBoards[id].emoji = emojiValue || "🖌️";
+    savedBoards[id].emoji = emoji || "🖌️";
     localStorage.setItem("boards", JSON.stringify(savedBoards));
     setBoards(savedBoards);
     setEditingEmojiId(null);
@@ -178,13 +179,11 @@ export default function DashboardPage() {
     const menuHeight = 160; // estimated height
     const padding = 8;
 
-    // Flip left if menu would go off screen
     let left = menuState.x + padding;
     if (left + menuWidth > window.innerWidth) {
       left = menuState.x - menuWidth - padding;
     }
 
-    // Prevent vertical overflow
     let top = menuState.y + padding;
     if (top + menuHeight > window.innerHeight) {
       top = window.innerHeight - menuHeight - padding;
@@ -192,28 +191,25 @@ export default function DashboardPage() {
 
     return (
       <div
-        className="board-menu absolute z-50 w-36 bg-[#2a2a2a] rounded-md  shadow-xl p-1"
-        style={{
-          left: left,
-          top: top,
-        }}
+        className="board-menu absolute z-50 w-36 bg-[#2a2a2a] rounded-md shadow-xl p-1"
+        style={{ left, top }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={() => openBoard(menuState.boardId)}
-          className="flex cursor-pointer items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md transition-colors"
+          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md transition-colors"
         >
           <ExternalLink className="w-4 h-4 mr-2" /> Open
         </button>
         <button
           onClick={() => startRenaming(menuState.boardId, board.name)}
-          className="flex cursor-pointer items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md transition-colors"
+          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md transition-colors"
         >
           <Edit className="w-4 h-4 mr-2" /> Rename
         </button>
         <button
           onClick={() => startEditingEmoji(menuState.boardId, board.emoji)}
-          className="flex cursor-pointer items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md transition-colors"
+          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md transition-colors"
         >
           <Edit className="w-4 h-4 mr-2" /> Change Emoji
         </button>
@@ -228,7 +224,7 @@ export default function DashboardPage() {
               deleteBoard(menuState.boardId);
             }
           }}
-          className="flex cursor-pointer items-center w-full px-3 py-2 text-sm text-red-400 hover:bg-red-900/40 rounded-md transition-colors"
+          className="flex items-center w-full px-3 py-2 text-sm text-red-400 hover:bg-red-900/40 rounded-md transition-colors"
         >
           <Trash2 className="w-4 h-4 mr-2" /> Delete
         </button>
@@ -236,12 +232,22 @@ export default function DashboardPage() {
     );
   };
 
+  // --- Prepare boards ---
+  const allBoardsArray = Object.keys(boards).map((id) => ({
+    id,
+    ...boards[id],
+  }));
+  const sortedBoards = allBoardsArray.sort(
+    (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+  );
+  const recentBoards = sortedBoards.slice(0, 8);
+
   return (
     <div className="min-h-screen bg-[#121212] text-gray-100 flex flex-col">
       {/* Navbar */}
       <header className="flex items-center justify-between p-5 bg-[#101010]/90 backdrop-blur-md">
-        <h1 className="text-xl font-semibold tracking-tight">
-          <span className="text-white font-mono">Tenshin Dashboard</span>
+        <h1 className="text-xl tracking-tight">
+          <span className="text-white font-sans">Tenshin Dashboard</span>
         </h1>
         <div className="flex items-center gap-3">
           {user && (
@@ -262,7 +268,7 @@ export default function DashboardPage() {
       {/* Main */}
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-lg font-semibold">Your Boards</h2>
+          <h2 className="text-lg">Your Boards</h2>
           <Button
             onClick={createNewBoard}
             className="bg-blue-600 hover:bg-blue-700 transition-colors"
@@ -271,84 +277,172 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Boards Grid */}
-        <div className="relative bg-[#121212] py-10 mx-20">
-          <div
-            className="flex gap-4 overflow-x-auto scrollbar-hidden mx-10 px-2 pb-10"
-            style={{
-              WebkitMaskImage:
-                "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
-              WebkitMaskRepeat: "no-repeat",
-              WebkitMaskSize: "100% 100%",
-              maskImage:
-                "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
-              maskRepeat: "no-repeat",
-              maskSize: "100% 100%",
-            }}
-          >
-            {Object.keys(boards).length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-gray-400 h-[60vh] rounded-xl w-full">
+        {/* Recent Boards */}
+        <section className="mb-10">
+          <h3 className="text-md  mb-4">Recent Boards</h3>
+          <div className="flex gap-4 overflow-x-auto scrollbar-hidden">
+            {recentBoards.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-gray-400 h-40 rounded-xl w-full">
                 <p className="text-sm">No boards yet. Create your first one!</p>
               </div>
             ) : (
-              Object.keys(boards).map((id) => {
-                const board = boards[id];
-                return (
+              recentBoards.map((board) => (
+                <div
+                  key={board.id}
+                  className="board-card-container relative font-sans shrink-0 w-40 h-40 bg-[#1a1a1a] rounded-xl shadow-xl shadow-[#101010] flex flex-col justify-end hover:shadow-lg transition-shadow"
+                >
+                  <div className="grow bg-[#ff8383] rounded-t-xl"></div>
                   <div
-                    key={id}
-                    className="board-card-container relative font-mono shrink-0 w-40 h-40 bg-[#1a1a1a] rounded-xl shadow-xl shadow-[#101010] flex flex-col justify-end hover:shadow-lg transition-shadow"
+                    className="p-4 cursor-pointer"
+                    onClick={() => openBoard(board.id)}
                   >
-                    <div className="grow bg-[#ff8383] rounded-t-xl"></div>
-                    <div
-                      className="p-4 cursor-pointer"
-                      onClick={() => openBoard(id)}
-                    >
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-between relative">
-                          <span
-                            className="text-2xl"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              startEditingEmoji(id, board.emoji);
-                            }}
-                            title="Click to edit emoji"
-                          >
-                            {board.emoji || "🖌️"}
-                          </span>
-                          <span
-                            className="text-white text-lg cursor-pointer p-1 hover:bg-[#2a2a2a] rounded-md transition-colors"
-                            onClick={(e) => handleMenuClick(e, id)}
-                            title="More options"
-                          >
-                            <Ellipsis />
-                          </span>
-                        </div>
-
-                        <h3
-                          className="text-sm font-medium truncate text-white w-full"
-                          onDoubleClick={() => startRenaming(id, board.name)}
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center justify-between relative">
+                        <span
+                          className="text-2xl"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startEditingEmoji(board.id, board.emoji);
+                          }}
+                          title="Click to edit emoji"
                         >
-                          {board.name}
-                        </h3>
-
-                        <p className="text-xs text-gray-400">
-                          {timeAgo(board.updatedAt)}
-                        </p>
+                          {board.emoji || "🖌️"}
+                        </span>
+                        <span
+                          className="text-white text-lg cursor-pointer p-1 hover:bg-[#2a2a2a] rounded-md transition-colors"
+                          onClick={(e) => handleMenuClick(e, board.id)}
+                          title="More options"
+                        >
+                          <Ellipsis />
+                        </span>
                       </div>
+                      <h3
+                        className="text-sm font-medium truncate text-white w-full"
+                        onDoubleClick={() =>
+                          startRenaming(board.id, board.name)
+                        }
+                      >
+                        {board.name}
+                      </h3>
+                      <p className="text-xs text-gray-400">
+                        {timeAgo(board.updatedAt)}
+                      </p>
                     </div>
                   </div>
-                );
-              })
+                </div>
+              ))
             )}
           </div>
-        </div>
+        </section>
+
+        {/* All Boards */}
+        <section>
+          <h3 className="text-md mb-4">All Boards</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {allBoardsArray.length === 0 ? (
+              <p className="text-gray-400">No boards yet.</p>
+            ) : (
+              allBoardsArray.map((board) => (
+                <div
+                  key={board.id}
+                  className="board-card-container relative font-sans w-full h-32 bg-[#1a1a1a] rounded-xl shadow-xl shadow-[#101010] flex flex-col justify-end hover:shadow-lg transition-shadow p-4 cursor-pointer"
+                  onClick={() => openBoard(board.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>{board.emoji || "🖌️"}</span>
+                    <span
+                      className="text-white cursor-pointer"
+                      onClick={(e) => handleMenuClick(e, board.id)}
+                    >
+                      <Ellipsis />
+                    </span>
+                  </div>
+                  <h3 className="text-white font-medium truncate">
+                    {board.name}
+                  </h3>
+                  <p className="text-gray-400 text-xs">
+                    {timeAgo(board.updatedAt)}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
 
         {menuState.open && menuState.boardId && (
           <BoardMenu board={boards[menuState.boardId]} />
         )}
 
-        {errorMessage && !editingBoardId && (
-          <p className="text-red-500 text-sm mt-4">{errorMessage}</p>
+        {/* --- Rename Modal --- */}
+        {editingBoardId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-[#1a1a1a] p-6 rounded-xl w-80 shadow-xl">
+              <h2 className="text-lg  text-white mb-4">Rename Board</h2>
+              <Input
+                value={newBoardName}
+                onChange={(e) => setNewBoardName(e.target.value)}
+                placeholder="Enter new board name"
+                className="mb-4"
+                autoFocus
+              />
+              {errorMessage && (
+                <p className="text-red-500 text-sm mb-2">{errorMessage}</p>
+              )}
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditingBoardId(null);
+                    setErrorMessage("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={() => saveBoardName(editingBoardId)}>
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* --- Emoji Modal --- */}
+        {editingEmojiId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-[#1a1a1a] p-6 rounded-xl w-80 shadow-xl">
+              <h2 className="text-lg text-white mb-4">Choose an Emoji</h2>
+              <div className="grid grid-cols-6 gap-3 mb-4">
+                {[
+                  "🖌️",
+                  "🎨",
+                  "📝",
+                  "📌",
+                  "🔥",
+                  "💡",
+                  "⚡",
+                  "🎯",
+                  "🌟",
+                  "🚀",
+                ].map((emoji) => (
+                  <span
+                    key={emoji}
+                    className="text-2xl cursor-pointer hover:bg-gray-700 rounded-md p-1"
+                    onClick={() => saveEmoji(editingEmojiId, emoji)}
+                  >
+                    {emoji}
+                  </span>
+                ))}
+              </div>
+              <div className="flex justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => setEditingEmojiId(null)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
       </main>
     </div>
