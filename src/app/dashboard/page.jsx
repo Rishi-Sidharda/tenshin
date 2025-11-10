@@ -279,7 +279,7 @@ export default function DashboardPage() {
 
         {/* Recent Boards */}
         <section className="mb-10">
-          <h3 className="text-md  mb-4">Recent Boards</h3>
+          <h3 className="text-md mb-4">Recent Boards</h3>
           <div className="flex gap-4 overflow-x-auto scrollbar-hidden">
             {recentBoards.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-gray-400 h-40 rounded-xl w-full">
@@ -289,7 +289,7 @@ export default function DashboardPage() {
               recentBoards.map((board) => (
                 <div
                   key={board.id}
-                  className="board-card-container relative font-sans shrink-0 w-40 h-40 bg-[#1a1a1a] rounded-xl shadow-xl shadow-[#101010] flex flex-col justify-end hover:shadow-lg transition-shadow"
+                  className="board-card-container relative font-sans shrink-0 w-40 h-40 bg-[#1a1a1a] rounded-xl flex flex-col justify-end hover:shadow-lg transition-shadow"
                 >
                   <div className="grow bg-[#ff8383] rounded-t-xl"></div>
                   <div
