@@ -272,8 +272,20 @@ export default function DashboardPage() {
         </div>
 
         {/* Boards Grid */}
-        <div className="relative bg-[#121212] py-10">
-          <div className="flex gap-4 overflow-x-auto scrollbar-hidden mx-10 px-2 pb-10">
+        <div className="relative bg-[#121212] py-10 mx-20">
+          <div
+            className="flex gap-4 overflow-x-auto scrollbar-hidden mx-10 px-2 pb-10"
+            style={{
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+              WebkitMaskRepeat: "no-repeat",
+              WebkitMaskSize: "100% 100%",
+              maskImage:
+                "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+              maskRepeat: "no-repeat",
+              maskSize: "100% 100%",
+            }}
+          >
             {Object.keys(boards).length === 0 ? (
               <div className="flex flex-col items-center justify-center text-gray-400 h-[60vh] rounded-xl w-full">
                 <p className="text-sm">No boards yet. Create your first one!</p>
