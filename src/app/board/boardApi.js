@@ -1,9 +1,6 @@
 // boardApi.js
 let excalidrawApi = null;
 
-/**
- * Store the Excalidraw API globally after it's ready.
- */
 export const setExcalidrawApi = (api) => {
   if (!api) {
     console.warn("❌ Tried to set empty Excalidraw API");
@@ -13,14 +10,8 @@ export const setExcalidrawApi = (api) => {
   console.log("✅ Excalidraw API initialized");
 };
 
-/**
- * Retrieve the API anywhere.
- */
 export const getExcalidrawApi = () => excalidrawApi;
 
-/**
- * Safely draw an element on the canvas (centered on current view).
- */
 export const drawExcalidrawElements = async (component) => {
   // Guard: must be in the browser
   if (typeof window === "undefined") {
