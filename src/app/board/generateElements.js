@@ -3,16 +3,22 @@ export function generateElements({ component, appState }) {
   const { scrollX, scrollY, zoom, width, height } = appState;
 
   // Center of the current visible canvas (accounting for zoom and scroll)
-  const centerX = -scrollX + width / (2 * zoom.value || zoom);
-  const centerY = -scrollY + height / (2 * zoom.value || zoom);
+  const centerX = -scrollX + width / (2 * (zoom.value || zoom));
+  const centerY = -scrollY + height / (2 * (zoom.value || zoom));
 
-  const timeStamp = new Date().toLocaleTimeString();
+  // Add slight randomness to avoid perfectly centered placement
+  const randomOffset = (range) => (Math.random() - 0.5) * range;
+  const offsetX = randomOffset(200); // ±100px variation horizontally
+  const offsetY = randomOffset(150); // ±75px variation vertically
+
+  const x = centerX + offsetX;
+  const y = centerY + offsetY;
 
   const componentsMap = {
     rectangle: {
       type: "rectangle",
-      x: centerX - 125,
-      y: centerY - 100,
+      x: x - 125,
+      y: y - 100,
       width: 250,
       height: 200,
       backgroundColor: "transparent",
@@ -23,8 +29,8 @@ export function generateElements({ component, appState }) {
     },
     ellipse: {
       type: "ellipse",
-      x: centerX - 125,
-      y: centerY - 100,
+      x: x - 125,
+      y: y - 100,
       width: 250,
       height: 200,
       strokeColor: "#000000",
@@ -35,8 +41,8 @@ export function generateElements({ component, appState }) {
     },
     diamond: {
       type: "diamond",
-      x: centerX - 100,
-      y: centerY - 100,
+      x: x - 100,
+      y: y - 100,
       width: 200,
       height: 200,
       strokeColor: "#000000",
@@ -47,9 +53,9 @@ export function generateElements({ component, appState }) {
     },
     text: {
       type: "text",
-      x: centerX - 120 / 2,
-      y: centerY - 20 / 2,
-      text: `Created at`,
+      x: x - 120 / 2,
+      y: y - 20 / 2,
+      text: "Created at",
       fontSize: 24,
       width: 100,
       height: 100,
@@ -65,6 +71,5 @@ export function generateElements({ component, appState }) {
   };
 
   const element = componentsMap[component] || componentsMap.rectangle;
-
   return [element];
 }

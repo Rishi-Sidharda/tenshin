@@ -23,6 +23,7 @@
     "@supabase/supabase-js": "^2.76.1",
     "@uiw/react-markdown-preview": "^5.1.5",
     "@uiw/react-md-editor": "^4.0.8",
+    "boxicons": "^2.1.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
