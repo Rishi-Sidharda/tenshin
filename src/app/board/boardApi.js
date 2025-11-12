@@ -52,7 +52,7 @@ export const drawExcalidrawElements = async (component) => {
         fontFamily: 1,
         textAlign: "left",
         verticalAlign: "top",
-        strokeColor: "#AAAAAA",
+        strokeColor: "transparent",
         backgroundColor: "transparent",
         strokeWidth: 1,
         roughness: 0,
@@ -65,7 +65,7 @@ export const drawExcalidrawElements = async (component) => {
     });
 
     // Wait briefly to ensure the renderer updates
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Step 2️⃣: Now add the real markdown
     const markdownElements = convertToExcalidrawElements(
