@@ -27,6 +27,10 @@ import {
   FilePlus,
   LogOut,
   FolderOpen,
+  ChevronRight,
+  ChevronDown,
+  BookOpenText,
+  MoreHorizontal,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -736,6 +740,12 @@ export default function DashboardPage() {
               <PackagePlus className="w-4 h-4" />
               New Folder
             </button>
+            <button
+              onClick={createNewBoard}
+              className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1">
+              <BookOpenText className="w-4 h-4" />
+              Create Board
+            </button>
           </nav>
 
           <div className="flex-1 overflow-y-auto">
@@ -777,14 +787,6 @@ export default function DashboardPage() {
               Folders
             </h3>
             <div className="flex flex-col">
-              <button
-                key="no-folder"
-                onClick={() => setSelectedFolderId(null)}
-                className={`folder-item flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1 w-full text-left`}>
-                <Folder className="w-4 h-4" />
-                <span className="truncate text-sm">All / Recent</span>
-              </button>
-
               {folderList.length === 0 ? (
                 <p className="text-gray-600 text-sm px-2 mt-2">No folders</p>
               ) : (
@@ -807,9 +809,27 @@ export default function DashboardPage() {
                   return (
                     <div key={folder.id} className="relative">
                       <div
-                        className={`folder-item flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1 w-full text-left ${
+                        className={`folder-item flex items-center mb-1 text-gray-300 hover:bg-[#2a2a2a] rounded-sm px-1 w-full text-left ${
                           selectedFolderId === folder.id ? "bg-[#2a2a2a]" : ""
                         }`}>
+                        {/* Collapse/Expand Button */}
+                        <button
+                          aria-label={
+                            isCollapsed ? "Expand folder" : "Collapse folder"
+                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFolderCollapse(folder.id);
+                          }}
+                          className="px-1 py-2 text-gray-400 hover:text-gray-200 transition-colors duration-150 rounded">
+                          {isCollapsed ? (
+                            <ChevronRight className="w-4 h-4" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4" />
+                          )}
+                        </button>
+
+                        {/* Folder Info */}
                         <button
                           onClick={() => {
                             toggleFolderCollapse(folder.id);
@@ -828,35 +848,51 @@ export default function DashboardPage() {
                           <span className="truncate text-sm">
                             {folder.name}
                           </span>
-                          <span className="ml-auto text-xs text-gray-400">
-                            {(folder.boards || []).length}
-                          </span>
                         </button>
 
+                        {/* Three-dot menu */}
                         <button
-                          aria-label={
-                            isCollapsed ? "Expand folder" : "Collapse folder"
-                          }
                           onClick={(e) => {
                             e.stopPropagation();
-                            toggleFolderCollapse(folder.id);
+                            handleFolderMenuClick(e, folder.id);
                           }}
-                          className="ml-2 p-1 text-gray-400 hover:text-gray-200">
-                          {isCollapsed ? "+" : "-"}
+                          aria-label="Folder options"
+                          className="p-1 text-gray-400 hover:text-gray-200 rounded">
+                          <MoreHorizontal className="w-4 h-4" />
                         </button>
                       </div>
 
                       {!isCollapsed && (
                         <div className="ml-6 mt-1 mb-2 flex flex-col gap-1">
                           {folderBoards.length ? (
-                            folderBoards.map((b, index) => (
-                              <button
-                                key={b.id ?? index}
-                                onClick={() => openBoard(b.id)}
-                                className="text-sm text-gray-300 hover:text-white text-left truncate">
-                                {b.name}
-                              </button>
-                            ))
+                            folderBoards.map((b, index) => {
+                              // Dynamically assign the icon for this board
+                              const Icon = ICONS[b.icon] || Brush;
+
+                              return (
+                                <button
+                                  key={b.id ?? index}
+                                  onClick={() => openBoard(b.id)}
+                                  className="flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1 w-full text-left">
+                                  {/* Board icon */}
+                                  <Icon className="w-4 h-4" />
+
+                                  {/* Board name */}
+                                  <span className="truncate text-sm">
+                                    {b.name}
+                                  </span>
+
+                                  {/* Optional folder badge */}
+                                  {b.folder && (
+                                    <span
+                                      className="ml-auto text-xs px-2 py-0.5 rounded"
+                                      style={{ background: b.folder.color }}>
+                                      {b.folder.name}
+                                    </span>
+                                  )}
+                                </button>
+                              );
+                            })
                           ) : (
                             <div className="text-xs text-gray-500 italic">
                               Empty
@@ -864,11 +900,6 @@ export default function DashboardPage() {
                           )}
                         </div>
                       )}
-
-                      {/* {folderMenuState.open &&
-                        folderMenuState.folderId === folder.id && (
-                          <FolderMenu folder={folder} />
-                        )} */}
                     </div>
                   );
                 })
