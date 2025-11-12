@@ -41,7 +41,6 @@ export default function Board() {
   const [showCommandPallet, setShowCommandPallet] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
 
   // ✅ Register the Excalidraw API
   useEffect(() => {
@@ -67,26 +66,33 @@ export default function Board() {
   useEffect(() => {
     if (!api || !boardId || isLoaded) return;
 
-    // Only load the specific board, not all boards
-    const boardKey = `board_${boardId}`;
-    const storedBoard = localStorage.getItem(boardKey);
+    const STORAGE_KEY = "tenshin";
+    const BOARD_DATA_KEY = "boardData";
 
-    if (storedBoard) {
-      const boardData = JSON.parse(storedBoard);
+    const tenshinRaw = localStorage.getItem(STORAGE_KEY);
+    const boardDataRaw = localStorage.getItem(BOARD_DATA_KEY);
 
+    const tenshin = tenshinRaw
+      ? JSON.parse(tenshinRaw)
+      : { boards: {}, folders: {}, ui: { collapsedFolders: {} } };
+    const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};
+
+    const boardContent = boardsData[boardId];
+
+    if (boardContent) {
       const fixedAppState = {
-        ...boardData.appState,
+        ...boardContent.appState,
         collaborators: new Map(),
       };
 
       // Delay to ensure Excalidraw is initialized
       setTimeout(() => {
         api.updateScene({
-          elements: boardData.elements || [],
+          elements: boardContent.elements || [],
           appState: fixedAppState,
-          files: boardData.files || {},
+          files: boardContent.files || {},
         });
-        api.scrollToContent(boardData.elements || []);
+        api.scrollToContent(boardContent.elements || []);
         setIsLoaded(true);
       }, 300);
     } else {
@@ -102,31 +108,48 @@ export default function Board() {
     const elements = api.getSceneElements();
     const appState = api.getAppState();
     const files = api.getFiles();
-
     const safeAppState = { ...appState, collaborators: {} };
 
-    // Get existing board metadata (name, emoji)
-    const savedBoards = JSON.parse(localStorage.getItem("boards") || "{}");
-    const existingBoard = savedBoards[boardId] || {
-      id: boardId,
-      name: "Untitled Board",
-      emoji: "🖌️",
-    };
+    const STORAGE_KEY = "tenshin";
+    const BOARD_DATA_KEY = "boardData";
 
-    const updatedBoard = {
-      ...existingBoard,
+    // Load existing data
+    const tenshinRaw = localStorage.getItem(STORAGE_KEY);
+    const boardDataRaw = localStorage.getItem(BOARD_DATA_KEY);
+
+    const tenshin = tenshinRaw
+      ? JSON.parse(tenshinRaw)
+      : { boards: {}, folders: {}, ui: { collapsedFolders: {} } };
+    const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};
+
+    const oldContent = boardsData[boardId] || {};
+
+    // Update content
+    boardsData[boardId] = {
       elements,
       appState: safeAppState,
       files,
-      updatedAt: new Date().toISOString(),
     };
 
-    // Save to localStorage
-    savedBoards[boardId] = updatedBoard;
-    localStorage.setItem("boards", JSON.stringify(savedBoards));
+    // Update metadata.updatedAt only if elements/files changed
+    const hasChanged =
+      JSON.stringify(oldContent.elements) !== JSON.stringify(elements) ||
+      JSON.stringify(oldContent.files) !== JSON.stringify(files);
 
-    // Also save individually
-    localStorage.setItem(`board_${boardId}`, JSON.stringify(updatedBoard));
+    if (hasChanged) {
+      if (!tenshin.boards[boardId]) {
+        tenshin.boards[boardId] = {
+          id: boardId,
+          name: "Untitled Board",
+          icon: "🖌️",
+        };
+      }
+      tenshin.boards[boardId].updatedAt = new Date().toISOString();
+    }
+
+    // Save back
+    localStorage.setItem(BOARD_DATA_KEY, JSON.stringify(boardsData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tenshin));
 
     setTimeout(() => setIsSaving(false), 800);
   };
@@ -145,15 +168,13 @@ export default function Board() {
           excalidrawAPI={(excalidrawApi) => setApi(excalidrawApi)}
           UIOptions={{
             canvasActions: {
-              // keeps the other buttons
               changeColor: true,
             },
-
             renderCustomUI: true,
           }}
           defaultOptions={{
-            elementBackgroundColor: "red", // sets default element color
-            primaryColor: "red", // sets the primary theme color to red
+            elementBackgroundColor: "red",
+            primaryColor: "red",
           }}
           renderTopLeftUI={() => (
             <button

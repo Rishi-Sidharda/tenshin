@@ -238,6 +238,8 @@ export default function DashboardPage() {
     a.name.localeCompare(b.name)
   );
 
+  const noFolderBoards = sortedBoards.filter((b) => !b.folderId);
+
   // ----------------------- HELPERS -----------------------
   function timeAgo(dateString) {
     if (!dateString) return "just now";
@@ -341,7 +343,6 @@ export default function DashboardPage() {
     const newData = { ...data, boards: { ...(data.boards || {}) } };
     if (!newData.boards[id]) return;
     newData.boards[id].name = trimmed;
-    newData.boards[id].updatedAt = new Date().toISOString();
     saveToStorage({ ...newData, boardsData: data.boardsData });
     setEditingBoardId(null);
     setErrorMessage("");
@@ -356,7 +357,6 @@ export default function DashboardPage() {
     const newData = { ...data, boards: { ...(data.boards || {}) } };
     if (!newData.boards[id]) return;
     newData.boards[id].icon = iconName;
-    newData.boards[id].updatedAt = new Date().toISOString();
     saveToStorage({ ...newData, boardsData: data.boardsData });
     setEditingIconId(null);
   };
@@ -365,7 +365,6 @@ export default function DashboardPage() {
     const newData = { ...data, boards: { ...(data.boards || {}) } };
     if (!newData.boards[id]) return;
     newData.boards[id].isFavorite = !newData.boards[id].isFavorite;
-    newData.boards[id].updatedAt = new Date().toISOString();
     saveToStorage({ ...newData, boardsData: data.boardsData });
     setMenuState({ open: false, x: 0, y: 0, boardId: null });
   };
@@ -661,7 +660,7 @@ export default function DashboardPage() {
 
     return (
       <div
-        className="folder-menu absolute z-50 w-44 bg-[#2a2a2a] rounded-md shadow-xl p-1"
+        className="folder-menu absolute z-50 w-50 bg-[#2a2a2a] rounded-md shadow-xl p-1"
         style={{ left, top }}
         onClick={(e) => e.stopPropagation()}>
         <button
@@ -875,6 +874,33 @@ export default function DashboardPage() {
                 })
               )}
             </div>
+
+            {/* Boards with no folder */}
+            {noFolderBoards.length > 0 && (
+              <div className="mt-2">
+                <h3 className="text-xs text-[#a3a3a3] font-semibold mb-2 mx-1">
+                  No Folder
+                </h3>
+                <div className="flex flex-col gap-1 px-1">
+                  {noFolderBoards.map((board) => {
+                    const Icon = ICONS[board.icon] || Brush;
+                    return (
+                      <button
+                        key={board.id}
+                        onClick={() => openBoard(board.id)}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          handleMenuClick(e, board.id);
+                        }}
+                        className="flex items-center gap-2 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1 w-full text-left">
+                        <Icon className="w-4 h-4" />
+                        <span className="truncate text-sm">{board.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="mt-6"></div>
           </div>
