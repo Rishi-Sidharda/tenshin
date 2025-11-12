@@ -1,24 +1,88 @@
-export function generateMarkdown({ markdown, appState }) {
-  const { scrollX, scrollY, zoom, width, height } = appState;
+// generateMarkdown.js
 
-  // Center of the current visible canvas
-  const centerX = -scrollX + width / (2 * (zoom.value || zoom));
-  const centerY = -scrollY + height / (2 * (zoom.value || zoom));
+const generateGroupId = () =>
+  `markdown-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Page dimensions
-  const pageWidth = 600;
-  const pageHeight = 800;
+// Approximate text wrapping function
+function wrapText(text, fontSize, maxWidth) {
+  const approxCharWidth = fontSize * 0.6; // rough width per character
+  const maxCharsPerLine = Math.floor(maxWidth / approxCharWidth);
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = "";
+
+  words.forEach((word) => {
+    if (
+      (currentLine + (currentLine ? " " : "") + word).length <= maxCharsPerLine
+    ) {
+      currentLine += (currentLine ? " " : "") + word;
+    } else {
+      if (currentLine) lines.push(currentLine);
+      currentLine = word;
+    }
+  });
+
+  if (currentLine) lines.push(currentLine);
+  return lines;
+}
+
+export function generateMarkdownPage(centerX, centerY, markdownText) {
+  const groupId = generateGroupId();
+  const pageWidth = 650;
   const padding = 40;
-  const lineSpacing = 30;
+  const lineSpacing = 10;
 
-  // Start position for content
-  let currentY = centerY - pageHeight / 2 + padding;
+  let contentHeight = padding; // top padding
+  const elements = [];
+  const lines = markdownText.split("\n");
 
-  // Create page rectangle
+  const processedLines = [];
+
+  // Preprocess lines to handle wrapping and calculate total height
+  lines.forEach((line) => {
+    line = line.trim();
+    if (!line) {
+      contentHeight += lineSpacing * 2;
+      processedLines.push({ type: "empty" });
+      return;
+    }
+
+    let fontSize = 24;
+    let isQuote = false;
+
+    if (line.startsWith("# ")) {
+      fontSize = 36;
+      line = line.replace(/^# /, "");
+    } else if (line.startsWith("> ")) {
+      fontSize = 20;
+      line = line.replace(/^> /, "");
+      isQuote = true;
+    } else if (/^---+$/.test(line)) {
+      processedLines.push({ type: "hr" });
+      contentHeight += 20;
+      return;
+    }
+
+    const wrappedLines = wrapText(line, fontSize, pageWidth - 2 * padding);
+    processedLines.push({
+      type: "text",
+      lines: wrappedLines,
+      fontSize,
+      isQuote,
+    });
+    contentHeight += wrappedLines.length * (fontSize + lineSpacing);
+
+    if (fontSize === 36) contentHeight += 10; // extra spacing for headers
+  });
+
+  const pageHeight = contentHeight + padding; // add bottom padding
+  const topY = centerY - pageHeight / 2;
+
+  // Rectangle background
   const pageRect = {
     type: "rectangle",
     x: centerX - pageWidth / 2,
-    y: centerY - pageHeight / 2,
+    y: topY,
     width: pageWidth,
     height: pageHeight,
     strokeColor: "#000000",
@@ -26,65 +90,19 @@ export function generateMarkdown({ markdown, appState }) {
     strokeWidth: 2,
     roughness: 1,
     opacity: 100,
+    groupIds: [groupId],
   };
 
-  const elements = [pageRect];
+  elements.push(pageRect);
 
-  // Split markdown by line breaks
-  const lines = markdown.split("\n");
+  // Place text elements
+  let currentY = topY + padding;
 
-  lines.forEach((line) => {
-    line = line.trim();
-    if (!line) {
-      currentY += lineSpacing / 2; // extra spacing for empty lines
-      return;
-    }
-
-    let element = null;
-
-    if (line.startsWith("# ")) {
-      // Heading
-      element = {
-        type: "text",
-        x: centerX - (pageWidth - 2 * padding) / 2,
-        y: currentY,
-        text: line.replace(/^# /, ""),
-        fontSize: 36,
-        width: pageWidth - 2 * padding,
-        height: 50,
-        fontFamily: 1,
-        textAlign: "left",
-        verticalAlign: "top",
-        strokeColor: "#000000",
-        backgroundColor: "transparent",
-        strokeWidth: 1,
-        roughness: 1,
-        opacity: 100,
-      };
-      currentY += 50 + 10;
-    } else if (line.startsWith("> ")) {
-      // Quote block
-      element = {
-        type: "text",
-        x: centerX - (pageWidth - 2 * padding) / 2 + 10,
-        y: currentY,
-        text: line.replace(/^> /, ""),
-        fontSize: 20,
-        width: pageWidth - 2 * padding - 20,
-        height: 40,
-        fontFamily: 1,
-        textAlign: "left",
-        verticalAlign: "top",
-        strokeColor: "#555555",
-        backgroundColor: "#f0f0f0",
-        strokeWidth: 1,
-        roughness: 1,
-        opacity: 100,
-      };
-      currentY += 40 + 10;
-    } else if (/^---+$/.test(line)) {
-      // Horizontal rule
-      element = {
+  processedLines.forEach((item) => {
+    if (item.type === "empty") {
+      currentY += lineSpacing * 2;
+    } else if (item.type === "hr") {
+      elements.push({
         type: "line",
         x: centerX - (pageWidth - 2 * padding) / 2,
         y: currentY,
@@ -94,31 +112,37 @@ export function generateMarkdown({ markdown, appState }) {
         strokeWidth: 2,
         roughness: 1,
         opacity: 100,
-      };
+        groupIds: [groupId],
+      });
       currentY += 20;
-    } else {
-      // Paragraph
-      element = {
-        type: "text",
-        x: centerX - (pageWidth - 2 * padding) / 2,
-        y: currentY,
-        text: line,
-        fontSize: 24,
-        width: pageWidth - 2 * padding,
-        height: 40,
-        fontFamily: 1,
-        textAlign: "left",
-        verticalAlign: "top",
-        strokeColor: "#000000",
-        backgroundColor: "transparent",
-        strokeWidth: 1,
-        roughness: 1,
-        opacity: 100,
-      };
-      currentY += 40 + 10;
-    }
+    } else if (item.type === "text") {
+      const strokeColor = item.isQuote ? "#555555" : "#000000";
+      const backgroundColor = item.isQuote ? "#f0f0f0" : "transparent";
 
-    if (element) elements.push(element);
+      item.lines.forEach((lineText) => {
+        elements.push({
+          type: "text",
+          x: centerX - (pageWidth - 2 * padding) / 2,
+          y: currentY,
+          text: lineText,
+          fontSize: item.fontSize,
+          width: pageWidth - 2 * padding,
+          height: item.fontSize + 8,
+          fontFamily: 1,
+          textAlign: "left",
+          verticalAlign: "top",
+          strokeColor,
+          backgroundColor,
+          strokeWidth: 1,
+          roughness: 1,
+          opacity: 100,
+          groupIds: [groupId],
+        });
+        currentY += item.fontSize + lineSpacing;
+      });
+
+      if (item.fontSize === 36) currentY += 10; // extra spacing for headers
+    }
   });
 
   return elements;

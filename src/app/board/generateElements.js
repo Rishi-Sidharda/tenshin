@@ -1,3 +1,5 @@
+import { generateMarkdownPage } from "./generateMarkdown";
+
 export function generateElements({ component, appState }) {
   const { scrollX, scrollY, zoom, width, height } = appState;
 
@@ -13,137 +15,23 @@ export function generateElements({ component, appState }) {
 
   // Placeholder markdown text
   const placeholderMarkdown = `
-# My Notes
+# Project Overview
 
-This is a paragraph explaining something important.
+This project aims to test the dynamic resizing of text boxes in our markdown re
+nderer. The paragraph below is intentionally long, including multiple sentences, commas, and various punctuation marks to push the limits of our wrapping logic. Every single word should wrap correctly within the rectangle width, and the rectangle height should grow accordingly.
 
-> This is a quote block like Notion.
+> Quote Block Example: This quote is very long and designed to check if the wrapping and responsive behavior works properly. The background and stroke color should be different from normal text, and the text should still respect the left and right padding of the rectangle.
+
+Here is another paragraph that is extremely verbose, containing multiple clauses, explanations, and exampl
+es. It should span multiple lines and demonstrate that both paragraph text and quote text behave as expected when reaching the edges of the rectangle. Ensure that spacing between lines remains consistent and visually pleasing.
 
 ---
 
-Another paragraph after a horizontal rule.
+# Conclusion
+
+Final notes on testing the markdown generator. Make sure headers, quotes, paragraphs, and horizontal rules all display correctly. Very long lines should wrap, and the rectangle height should expand dynamically to accommodate the content without cutting anything off.
+
 `;
-
-  // Utility to generate a unique group ID
-  const generateGroupId = () =>
-    `markdown-${Math.random().toString(36).substr(2, 9)}`;
-
-  // Function to generate a markdown page
-  const generateMarkdownPage = (markdownText) => {
-    const groupId = generateGroupId(); // all elements share this groupId
-    const pageWidth = 600;
-    const pageHeight = 800;
-    const padding = 40;
-    const lineSpacing = 30;
-    let currentY = centerY - pageHeight / 2 + padding;
-
-    const pageRect = {
-      type: "rectangle",
-      x: centerX - pageWidth / 2,
-      y: centerY - pageHeight / 2,
-      width: pageWidth,
-      height: pageHeight,
-      strokeColor: "#000000",
-      backgroundColor: "#ffffff",
-      strokeWidth: 2,
-      roughness: 1,
-      opacity: 100,
-      groupIds: [groupId],
-    };
-
-    const elements = [pageRect];
-    const lines = markdownText.split("\n");
-
-    lines.forEach((line) => {
-      line = line.trim();
-      if (!line) {
-        currentY += lineSpacing / 2;
-        return;
-      }
-
-      let element = null;
-
-      if (line.startsWith("# ")) {
-        element = {
-          type: "text",
-          x: centerX - (pageWidth - 2 * padding) / 2,
-          y: currentY,
-          text: line.replace(/^# /, ""),
-          fontSize: 36,
-          width: pageWidth - 2 * padding,
-          height: 50,
-          fontFamily: 1,
-          textAlign: "left",
-          verticalAlign: "top",
-          strokeColor: "#000000",
-          backgroundColor: "transparent",
-          strokeWidth: 1,
-          roughness: 1,
-          opacity: 100,
-          groupIds: [groupId],
-        };
-        currentY += 50 + 10;
-      } else if (line.startsWith("> ")) {
-        element = {
-          type: "text",
-          x: centerX - (pageWidth - 2 * padding) / 2 + 10,
-          y: currentY,
-          text: line.replace(/^> /, ""),
-          fontSize: 20,
-          width: pageWidth - 2 * padding - 20,
-          height: 40,
-          fontFamily: 1,
-          textAlign: "left",
-          verticalAlign: "top",
-          strokeColor: "#555555",
-          backgroundColor: "#f0f0f0",
-          strokeWidth: 1,
-          roughness: 1,
-          opacity: 100,
-          groupIds: [groupId],
-        };
-        currentY += 40 + 10;
-      } else if (/^---+$/.test(line)) {
-        element = {
-          type: "line",
-          x: centerX - (pageWidth - 2 * padding) / 2,
-          y: currentY,
-          width: pageWidth - 2 * padding,
-          height: 0,
-          strokeColor: "#000000",
-          strokeWidth: 2,
-          roughness: 1,
-          opacity: 100,
-          groupIds: [groupId],
-        };
-        currentY += 20;
-      } else {
-        element = {
-          type: "text",
-          x: centerX - (pageWidth - 2 * padding) / 2,
-          y: currentY,
-          text: line,
-          fontSize: 24,
-          width: pageWidth - 2 * padding,
-          height: 40,
-          fontFamily: 1,
-          textAlign: "left",
-          verticalAlign: "top",
-          strokeColor: "#000000",
-          backgroundColor: "transparent",
-          strokeWidth: 1,
-          roughness: 1,
-          opacity: 100,
-          groupIds: [groupId],
-        };
-        currentY += 40 + 10;
-      }
-
-      if (element) elements.push(element);
-    });
-
-    return elements;
-  };
 
   // Default shapes map
   const componentsMap = {
@@ -200,11 +88,10 @@ Another paragraph after a horizontal rule.
       roughness: 1,
       opacity: 100,
     },
-    markdown: generateMarkdownPage(placeholderMarkdown), // grouped markdown
+    markdown: generateMarkdownPage(centerX, centerY, placeholderMarkdown), // grouped markdown
   };
 
   const element = componentsMap[component] || componentsMap.rectangle;
 
-  // Always return an array
   return Array.isArray(element) ? element : [element];
 }
