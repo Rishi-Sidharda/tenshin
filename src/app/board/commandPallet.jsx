@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { drawExcalidrawElements } from "./boardApi";
 
-export default function CommandPallet({ onClose, floatingNotionAction }) {
+export default function CommandPallet({ onClose, floatingCardAction }) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function CommandPallet({ onClose, floatingNotionAction }) {
   const commands = [
     { label: "Go to Home", action: () => router.push("/") },
     { label: "Open Dashboard", action: () => router.push("/dashboard") },
-    { label: "Floating Notion", action: () => floatingNotionAction?.() },
+    { label: "Floating Card", action: () => floatingCardAction?.() },
     {
       label: "Add Rectangle",
       action: () => drawExcalidrawElements("rectangle"),

@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import "@excalidraw/excalidraw/index.css";
 import { setExcalidrawApi } from "./boardApi";
-import FloatingNotion from "./floatingNotion";
+import FloatingCard from "./floatingCard";
 import CommandPallet from "./commandPallet";
 import { Menu, Settings, UserRoundCog } from "lucide-react";
 import {
@@ -37,10 +37,11 @@ export default function Board() {
   const boardId = searchParams.get("id");
 
   const [api, setApi] = useState(null);
-  const [showFloatingNotion, setShowFloatingNotion] = useState(false);
+  const [showFloatingCard, setShowFloatingCard] = useState(false);
   const [showCommandPallet, setShowCommandPallet] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showMarkdownButton, setShowMarkdownButton] = useState(false);
 
   // ✅ Register the Excalidraw API
   useEffect(() => {
@@ -181,9 +182,7 @@ export default function Board() {
               el.groupIds?.some((id) => id.startsWith("markdown-"))
             );
 
-            if (markdownSelected) {
-              console.log("You selected a markdown page!");
-            }
+            setShowMarkdownButton(markdownSelected);
           }}
           UIOptions={{
             canvasActions: {
@@ -237,6 +236,25 @@ export default function Board() {
           )}
         />
 
+{showMarkdownButton && (
+        <button
+          style={{
+            position: "absolute",
+            top: 20,
+            right: 20,
+            padding: "10px 16px",
+            background: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+          }}
+          onClick={() => alert("Markdown button clicked!")}
+        >
+          Markdown Options
+        </button>
+      )}
+
         {/* Save Button */}
         <button
           onClick={handleSave}
@@ -262,14 +280,14 @@ export default function Board() {
         {showCommandPallet && (
           <CommandPallet
             onClose={() => setShowCommandPallet(false)}
-            floatingNotionAction={() => setShowFloatingNotion(true)}
+            FloatingCardAction={() => setShowFloatingCard(true)}
           />
         )}
 
-        {showFloatingNotion && (
-          <FloatingNotion
+        {showFloatingCard && (
+          <FloatingCard
             title="Custom Floating Card"
-            onClose={() => setShowFloatingNotion(false)}
+            onClose={() => setShowFloatingCard(false)}
           />
         )}
       </div>

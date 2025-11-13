@@ -89,7 +89,7 @@ export function generateMarkdownPage(centerX, centerY, markdownText) {
       return;
     }
 
-    const wrappedLines = wrapText(line, fontSize, pageWidth - 2 * padding);
+    const wrappedLines = wrapText(line, fontSize, pageWidth - 2);
     processedLines.push({
       type: "text",
       lines: wrappedLines,
@@ -147,7 +147,7 @@ export function generateMarkdownPage(centerX, centerY, markdownText) {
       item.lines.forEach((lineText) => {
         elements.push({
           type: "text",
-          x: safeCenterX - (pageWidth - 2 * padding) / 2,
+          x: safeCenterX - (pageWidth - 2 * padding) / 2 ,
           y: currentY,
           text: lineText,
           fontSize: item.fontSize,
