@@ -12,7 +12,7 @@ export const setExcalidrawApi = (api) => {
 
 export const getExcalidrawApi = () => excalidrawApi;
 
-export const drawExcalidrawElements = async (component) => {
+export const drawExcalidrawElements = async (component, markdown) => {
   // Guard: must be in the browser
   if (typeof window === "undefined") {
     console.warn("⚠️ drawExcalidrawElements called on server");
@@ -67,9 +67,11 @@ export const drawExcalidrawElements = async (component) => {
     // Wait briefly to ensure the renderer updates
     await new Promise((resolve) => setTimeout(resolve, 50));
 
+    const markdownText = `${markdown}`;
+
     // Step 2️⃣: Now add the real markdown
     const markdownElements = convertToExcalidrawElements(
-      generateElements({ component, appState })
+      generateElements({ component, appState, markdownText })
     );
 
     // Remove fake text element by filtering it out

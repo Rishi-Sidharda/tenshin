@@ -19,10 +19,6 @@ export default function CommandPallet({ onClose, floatingCardAction }) {
       action: () => drawExcalidrawElements("rectangle"),
     },
     { label: "Add Ellipse", action: () => drawExcalidrawElements("ellipse") },
-    { label: "Add Rhombus", action: () => drawExcalidrawElements("diamond") },
-    { label: "Add Markdown", action: () => drawExcalidrawElements("markdown") },
-    { label: "Add Line", action: () => drawExcalidrawElements() },
-    { label: "Add Text", action: () => drawExcalidrawElements("text") },
   ];
 
   const filtered = commands.filter((cmd) =>

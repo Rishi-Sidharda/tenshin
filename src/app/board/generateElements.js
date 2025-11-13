@@ -1,6 +1,6 @@
 import { generateMarkdownPage } from "./generateMarkdown";
 
-export function generateElements({ component, appState }) {
+export function generateElements({ component, appState, markdownText }) {
   const { scrollX, scrollY, zoom, width, height } = appState;
 
   const centerX = -scrollX + width / (2 * (zoom.value || zoom));
@@ -14,23 +14,7 @@ export function generateElements({ component, appState }) {
   const y = centerY + offsetY;
 
   // Placeholder markdown text
-  const placeholderMarkdown = `
-# API Overview
-
-This API allows users to authenticate, fetch resources, and update data. Below is a detailed description of the endpoints and how they interact. The text is long enough to wrap naturally within the available width.
-
-> Remember: Always use HTTPS and include an authorization token in the headers.
->> ok this is a memo and you can use this and see this.
-
-After a successful authentication, you’ll receive a JSON response that includes your session details, permissions, and expiration time. If authentication fails, the response will include an appropriate error message.
-
----
-
-# Sample Request
-
-
-
-`;
+  const markdown_text = `${markdownText}`;
 
   // Default shapes map
   const componentsMap = {
@@ -87,7 +71,7 @@ After a successful authentication, you’ll receive a JSON response that include
       roughness: 1,
       opacity: 100,
     },
-    markdown: generateMarkdownPage(centerX, centerY, placeholderMarkdown), // grouped markdown
+    markdown: generateMarkdownPage(centerX, centerY, markdown_text), // grouped markdown
   };
 
   const element = componentsMap[component] || componentsMap.rectangle;
