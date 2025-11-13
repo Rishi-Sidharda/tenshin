@@ -20,6 +20,7 @@ export function generateElements({ component, appState }) {
 This API allows users to authenticate, fetch resources, and update data. Below is a detailed description of the endpoints and how they interact. The text is long enough to wrap naturally within the available width.
 
 > Remember: Always use HTTPS and include an authorization token in the headers.
+>> ok this is a memo and you can use this and see this.
 
 After a successful authentication, you’ll receive a JSON response that includes your session details, permissions, and expiration time. If authentication fails, the response will include an appropriate error message.
 

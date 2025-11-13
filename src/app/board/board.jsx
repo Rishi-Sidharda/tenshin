@@ -142,7 +142,7 @@ export default function Board() {
         tenshin.boards[boardId] = {
           id: boardId,
           name: "Untitled Board",
-          icon: "🖌️",
+          icon: "Brush",
         };
       }
       tenshin.boards[boardId].updatedAt = new Date().toISOString();
@@ -280,7 +280,7 @@ export default function Board() {
         {showCommandPallet && (
           <CommandPallet
             onClose={() => setShowCommandPallet(false)}
-            FloatingCardAction={() => setShowFloatingCard(true)}
+            floatingCardAction={() => setShowFloatingCard(true)}
           />
         )}
 
