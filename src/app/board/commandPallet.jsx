@@ -13,7 +13,7 @@ export default function CommandPallet({ onClose, floatingCardAction }) {
   const commands = [
     { label: "Go to Home", action: () => router.push("/") },
     { label: "Open Dashboard", action: () => router.push("/dashboard") },
-    { label: "Floating Card", action: () => floatingCardAction?.() },
+    { label: "Add Markdown", action: () => floatingCardAction?.() },
     {
       label: "Add Rectangle",
       action: () => drawExcalidrawElements("rectangle"),
