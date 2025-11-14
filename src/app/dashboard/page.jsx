@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import {
   Edit,
   Trash2,
   ExternalLink,
+  Ban,
   Ellipsis,
   Search,
   FolderPlus,
@@ -70,6 +71,8 @@ export default function DashboardPage() {
   const [newBoardName, setNewBoardName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [editingIconId, setEditingIconId] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const [createFolderModalOpen, setCreateFolderModalOpen] = useState(false);
   const [editFolderModalOpen, setEditFolderModalOpen] = useState(false);
@@ -404,7 +407,6 @@ export default function DashboardPage() {
     newData.boards[boardId] = {
       ...board,
       folderId: folderId || null,
-      updatedAt: new Date().toISOString(),
     };
 
     if (folderId && newData.folders[folderId]) {
@@ -594,25 +596,29 @@ export default function DashboardPage() {
       <div
         className="board-menu absolute z-50 w-56 bg-[#2a2a2a] rounded-md shadow-xl p-1"
         style={{ left, top }}
-        onClick={(e) => e.stopPropagation()}>
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Open Board */}
         <button
           onClick={() => openBoard(menuState.boardId)}
-          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md">
+          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md"
+        >
           <ExternalLink className="w-4 h-4 mr-2" /> Open
         </button>
 
         {/* Rename */}
         <button
           onClick={() => startRenaming(menuState.boardId, board.name)}
-          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md">
+          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md"
+        >
           <Edit className="w-4 h-4 mr-2" /> Rename
         </button>
 
         {/* Change Icon */}
         <button
           onClick={() => startEditingIcon(menuState.boardId)}
-          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md">
+          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md"
+        >
           <Edit className="w-4 h-4 mr-2" /> Change Icon
         </button>
 
@@ -627,18 +633,20 @@ export default function DashboardPage() {
 
           {/* Submenu */}
           <div
-            className="absolute top-0 max-h-80 overflow-y-auto rounded-md bg-[#2a2a2a] shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-50"
+            className="absolute top-0 max-h-80 overflow-y-auto rounded-md bg-[#2a2a2a] scrollbar-hidden shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-50"
             style={{
               minWidth: submenuWidth,
               left:
                 left + menuWidth + submenuWidth > window.innerWidth
                   ? `-${submenuWidth}px`
                   : "100%",
-            }}>
+            }}
+          >
             {/* "No Folder" */}
             <button
               onClick={() => moveBoardToFolder(menuState.boardId, null)}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-[#3b3b3b] rounded-md">
+              className="w-full text-left px-3 py-2 text-sm hover:bg-[#3b3b3b] rounded-md"
+            >
               No Folder
             </button>
 
@@ -647,10 +655,12 @@ export default function DashboardPage() {
               <button
                 key={f.id}
                 onClick={() => moveBoardToFolder(menuState.boardId, f.id)}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-[#3b3b3b] rounded-md flex items-center">
+                className="w-full text-left px-3 py-2 text-sm hover:bg-[#3b3b3b] rounded-md flex items-center"
+              >
                 <span
                   className="inline-block w-3 h-3 mr-2 rounded-sm"
-                  style={{ background: f.color }}></span>
+                  style={{ background: f.color }}
+                ></span>
                 {f.name}
               </button>
             ))}
@@ -662,7 +672,8 @@ export default function DashboardPage() {
         {/* Favorite */}
         <button
           onClick={() => toggleFavorite(menuState.boardId)}
-          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md">
+          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md"
+        >
           <Star className="w-4 h-4 mr-2" />{" "}
           {data.boards[menuState.boardId]?.isFavorite
             ? "Remove Favorite"
@@ -675,7 +686,8 @@ export default function DashboardPage() {
             if (window.confirm(`Delete board: ${board.name}?`))
               deleteBoard(menuState.boardId);
           }}
-          className="flex items-center w-full px-3 py-2 text-sm text-red-400 hover:bg-red-900/40 rounded-md">
+          className="flex items-center w-full px-3 py-2 text-sm text-red-400 hover:bg-red-900/40 rounded-md"
+        >
           <Trash2 className="w-4 h-4 mr-2" /> Delete
         </button>
       </div>
@@ -700,10 +712,12 @@ export default function DashboardPage() {
       <div
         className="folder-menu absolute z-50 w-50 bg-[#2a2a2a] rounded-md shadow-xl p-1"
         style={{ left, top }}
-        onClick={(e) => e.stopPropagation()}>
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           onClick={() => openEditFolderModal(folder.id)}
-          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md">
+          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md"
+        >
           <Edit className="w-4 h-4 mr-2" /> Rename
         </button>
 
@@ -718,7 +732,8 @@ export default function DashboardPage() {
             setSelectedFolderId(folder.id);
             setFolderMenuState({ open: false, x: 0, y: 0, folderId: null });
           }}
-          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md">
+          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:bg-[#3b3b3b] rounded-md"
+        >
           <Palette className="w-4 h-4 mr-2" /> Change Color / Icon
         </button>
 
@@ -726,7 +741,8 @@ export default function DashboardPage() {
 
         <button
           onClick={() => confirmDeleteFolder(folder.id)}
-          className="flex items-center w-full px-3 py-2 text-sm text-red-400 hover:bg-red-900/40 rounded-md">
+          className="flex items-center w-full px-3 py-2 text-sm text-red-400 hover:bg-red-900/40 rounded-md"
+        >
           <Trash2 className="w-4 h-4 mr-2" /> Delete Folder
         </button>
       </div>
@@ -749,38 +765,44 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center gap-1">
               <button
+                title="Create new Board"
                 onClick={createNewBoard}
-                className="text-gray-300 hover:text-[#a3a3a3] px-2">
+                className="text-gray-300 cursor-pointer hover:text-[#a3a3a3] px-2"
+              >
                 <BookOpenText className="w-5 h-5" />
               </button>
               <button
+                title="Create New Folder"
                 onClick={openCreateFolderModal}
-                className="text-gray-300 hover:text-[#a3a3a3] px-2">
+                className="text-gray-300 cursor-pointer hover:text-[#a3a3a3] px-2"
+              >
                 <PackagePlus className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          <nav className="flex flex-col text-sm mb-4">
+          <nav className="flex flex-col mx-1 text-sm mb-4">
             <button className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1">
               <Search className="w-4 h-4" />
               Search
             </button>
             <button
               onClick={openCreateFolderModal}
-              className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1">
+              className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1"
+            >
               <PackagePlus className="w-4 h-4" />
               New Folder
             </button>
             <button
               onClick={createNewBoard}
-              className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1">
+              className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1"
+            >
               <BookOpenText className="w-4 h-4" />
               Create Board
             </button>
           </nav>
 
-          <div className="flex-1 scrollbar-hidden overflow-y-auto">
+          <div className="flex-1 mx-1 scrollbar-hidden overflow-y-auto">
             {/* Favorites */}
             <h3 className="text-xs text-[#a3a3a3] font-semibold mb-2 mx-1">
               Favourites
@@ -796,12 +818,14 @@ export default function DashboardPage() {
                     <button
                       key={board.id}
                       onClick={() => openBoard(board.id)}
-                      className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1 w-full text-left">
+                      className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1 w-full text-left"
+                    >
                       <span
                         className="ml-2 text-xs px-1 py-2 rounded-md shrink-0"
                         style={{
                           background: folder ? folder.color : "#d3d3d3",
-                        }}></span>
+                        }}
+                      ></span>
                       <Icon className="w-4 h-4 shrink-0" />
                       <span className="truncate text-sm flex-1">
                         {board.name}
@@ -811,14 +835,17 @@ export default function DashboardPage() {
                         onClick={(e) => {
                           e.stopPropagation(); // prevent button click
                           handleMenuClick(e, board.id);
-                        }}>
+                        }}
+                      >
                         <MoreHorizontal className="w-4 h-4" />
                       </span>
                     </button>
                   );
                 })
               ) : (
-                <p className="text-gray-600 text-sm px-2">No favourites</p>
+                <p className="text-gray-500 text-sm italic px-2">
+                  no favourites
+                </p>
               )}
             </div>
 
@@ -851,7 +878,8 @@ export default function DashboardPage() {
                       <div
                         className={`folder-item flex items-center mb-1 text-gray-300 hover:bg-[#2a2a2a] rounded-sm px-1 w-full text-left ${
                           selectedFolderId === folder.id ? "bg-[#2a2a2a]" : ""
-                        }`}>
+                        }`}
+                      >
                         {/* Collapse/Expand Button */}
                         <button
                           aria-label={
@@ -861,7 +889,8 @@ export default function DashboardPage() {
                             e.stopPropagation();
                             toggleFolderCollapse(folder.id);
                           }}
-                          className="px-1 py-2 text-gray-400 hover:text-gray-200 transition-colors duration-150 rounded">
+                          className="px-1 py-2 text-gray-400 hover:text-gray-200 transition-colors duration-150 rounded"
+                        >
                           {isCollapsed ? (
                             <ChevronRight className="w-4 h-4" />
                           ) : (
@@ -879,10 +908,12 @@ export default function DashboardPage() {
                             e.preventDefault();
                             handleFolderMenuClick(e, folder.id);
                           }}
-                          className="flex items-center gap-2 w-full text-left">
+                          className="flex items-center gap-2 w-full text-left"
+                        >
                           <span
                             className="inline-flex items-center justify-center w-5 h-5 rounded-sm"
-                            style={{ background: folder.color }}>
+                            style={{ background: folder.color }}
+                          >
                             <Icon className="w-3 h-3 text-white" />
                           </span>
                           <span className="truncate text-sm">
@@ -897,7 +928,8 @@ export default function DashboardPage() {
                             handleFolderMenuClick(e, folder.id);
                           }}
                           aria-label="Folder options"
-                          className="p-1 text-gray-400 hover:text-gray-200 rounded">
+                          className="p-1 text-gray-400 hover:text-gray-200 rounded"
+                        >
                           <MoreHorizontal className="w-4 h-4" />
                         </button>
                       </div>
@@ -913,7 +945,8 @@ export default function DashboardPage() {
                                 <button
                                   key={b.id ?? index}
                                   onClick={() => openBoard(b.id)}
-                                  className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-md p-1 w-full text-left transition-colors">
+                                  className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-md p-1 w-full text-left transition-colors"
+                                >
                                   {/* Board icon */}
                                   <Icon className="w-4 h-4 shrink-0" />
 
@@ -928,7 +961,8 @@ export default function DashboardPage() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleMenuClick(e, b.id);
-                                    }}>
+                                    }}
+                                  >
                                     <MoreHorizontal className="w-4 h-4" />
                                   </span>
                                 </button>
@@ -950,7 +984,12 @@ export default function DashboardPage() {
             {/* Boards with no folder */}
             {noFolderBoards.length > 0 && (
               <div className="mt-2">
-                <h3 className="text-xs text-[#a3a3a3] font-semibold mb-2 mx-1">
+                <h3
+                  onClick={() => {
+                    setSelectedFolderId(null);
+                  }}
+                  className="text-xs pr-full text-[#a3a3a3] font-semibold mb-2 mx-1"
+                >
                   No Folder
                 </h3>
                 <div className="flex flex-col gap-1 px-1">
@@ -958,15 +997,28 @@ export default function DashboardPage() {
                     const Icon = ICONS[board.icon] || Brush;
                     return (
                       <button
-                        key={board.id}
+                        key={board.id ?? index}
                         onClick={() => openBoard(board.id)}
-                        onContextMenu={(e) => {
-                          e.preventDefault();
-                          handleMenuClick(e, board.id);
-                        }}
-                        className="flex items-center gap-2 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1 w-full text-left">
-                        <Icon className="w-4 h-4" />
-                        <span className="truncate text-sm">{board.name}</span>
+                        className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-md p-1 w-full text-left transition-colors"
+                      >
+                        {/* Board icon */}
+                        <Icon className="w-4 h-4 shrink-0" />
+
+                        {/* Board name */}
+                        <span className="truncate text-sm flex-1">
+                          {board.name}
+                        </span>
+
+                        {/* More dots icon, only visible on hover */}
+                        <span
+                          className="ml-2 mr-1 text-gray-400 shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMenuClick(e, board.id);
+                          }}
+                        >
+                          <MoreHorizontal className="w-4 h-4" />
+                        </span>
                       </button>
                     );
                   })}
@@ -978,46 +1030,59 @@ export default function DashboardPage() {
           </div>
 
           <div className="shrink-0 mb-3 pt-3 border-t border-[#2a2a2a] px-2">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {/* Profile */}
               <button
+                title="Profile"
                 onClick={() => {
-                  // handle profile click
+                  window.location.href = "/profile";
                 }}
-                className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors">
+                className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors"
+              >
                 <UserRoundCog className="w-5 h-5" />
               </button>
 
               {/* Docs */}
               <button
+                title="Documentation"
                 onClick={() => {
                   // handle docs click
                 }}
-                className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors">
+                className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors"
+              >
                 <ScrollText className="w-5 h-5" />
               </button>
 
               {/* Settings */}
               <button
+                title="Settings"
                 onClick={() => {
                   // handle settings click
                 }}
-                className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors">
+                className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors"
+              >
                 <Settings className="w-5 h-5" />
               </button>
 
               {/* Log Out */}
               <button
+                title="Sign out"
                 onClick={async () => {
                   await supabase.auth.signOut();
                   window.location.href = "/signin";
                 }}
-                className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors">
+                className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors"
+              >
                 <LucideLogOut className="w-5 h-5" />
               </button>
 
               {/* User Plan Indicator */}
-              <span className="ml-auto  text-xs font-semibold text-gray-200 bg-gray-700 px-2 py-1 rounded-md">
+              <span
+                onClick={() => {
+                  window.location.href = "/pricing";
+                }}
+                className="ml-auto cursor-pointer font-mono text-xs font-semibold text-gray-200 bg-gray-700 px-2 py-1 rounded-md"
+              >
                 Free Plan
               </span>
             </div>
@@ -1028,53 +1093,69 @@ export default function DashboardPage() {
         <div className="flex-1 p-6 flex justify-center">
           <div className="w-full max-w-5xl">
             <section className="mb-10">
-              <h3 className="text-md mb-4">Recent Boards</h3>
-              <div className="flex gap-4 overflow-x-auto pb-15 relative px-2 -mx-2">
+              <h3 className="text-lg mt-20 mb-4">Recent Boards</h3>
+              <div className="flex flex-wrap gap-4 py-4 justify-start">
                 {recentBoards.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center text-gray-400 h-40 rounded-xl w-full">
+                  <div className="flex flex-col items-center justify-center text-gray-500 h-36 rounded-lg w-full bg-gray-900">
                     <p className="text-sm">
                       No boards yet. Create your first one!
                     </p>
                   </div>
                 ) : (
-                  recentBoards.map((board) => {
+                  recentBoards.slice(0, 6).map((board) => {
                     const Icon = ICONS[board.icon] || Brush;
+                    const folder = board.folderId
+                      ? data.folders[board.folderId]
+                      : null;
+
                     return (
                       <div
                         key={board.id}
-                        className="board-card-container relative font-sans shrink-0 w-40 h-40 bg-[#1a1a1a] rounded-xl flex flex-col shadow-lg shadow-[black] justify-end hover:shadow-2xl transition-shadow">
-                        <div className="grow bg-[#ff8383] rounded-t-xl"></div>
+                        className="board-card-container w-36 h-36 bg-[#202020] hover:bg-[#2a2a2a] rounded-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
+                        onClick={() => openBoard(board.id)}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          handleMenuClick(e, board.id);
+                        }}
+                      >
+                        {/* Small Top Color Bar */}
                         <div
-                          className="p-4 cursor-pointer"
-                          onClick={() => openBoard(board.id)}
-                          onContextMenu={(e) => {
-                            e.preventDefault();
-                            handleMenuClick(e, board.id);
-                          }}>
-                          <div className="flex flex-col gap-2">
-                            <div className="flex items-center justify-between relative">
-                              <div
-                                className="cursor-pointer p-1 hover:bg-[#2a2a2a] rounded-md transition-transform hover:scale-110"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  startEditingIcon(board.id);
-                                }}>
-                                <Icon className="w-6 h-6 text-gray-300" />
-                              </div>
-                              <span
-                                className="text-white text-lg cursor-pointer p-1 hover:bg-[#2a2a2a] rounded-md"
-                                onClick={(e) => handleMenuClick(e, board.id)}>
-                                <Ellipsis />
-                              </span>
+                          className="h-3 w-full rounded-t-lg"
+                          style={{
+                            backgroundColor: folder ? folder.color : "#6b7280",
+                          }}
+                        ></div>
+
+                        {/* Content */}
+                        <div className="p-3 flex flex-col gap-5 h-full">
+                          <div className="flex items-center justify-between">
+                            <div
+                              className="p-1 rounded hover:bg-[#3a3a3a] transition-transform hover:scale-110"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startEditingIcon(board.id);
+                              }}
+                            >
+                              <Icon className="w-6 h-6 text-white" />
                             </div>
+                            <span
+                              className="text-white p-1 rounded hover:bg-[#3a3a3a]"
+                              onClick={(e) => handleMenuClick(e, board.id)}
+                            >
+                              <Ellipsis />
+                            </span>
+                          </div>
+
+                          <div>
                             <h3
-                              className="text-md truncate text-white"
+                              className="text-white text-md truncate"
                               onDoubleClick={() =>
                                 startRenaming(board.id, board.name)
-                              }>
+                              }
+                            >
                               {board.name}
                             </h3>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-gray-400 mt-1">
                               {timeAgo(board.updatedAt)}
                             </p>
                           </div>
@@ -1083,6 +1164,400 @@ export default function DashboardPage() {
                     );
                   })
                 )}
+              </div>
+            </section>
+
+            <section className="mt-10">
+              <h3 className="text-lg mb-4">Browse by Folder</h3>
+
+              {/* Custom Folder Dropdown */}
+              <div className="relative inline-block w-56">
+                {/* Trigger */}
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="w-full bg-[#202020] hover:bg[#2a2a2a] text-white cursor-pointer py-2 px-3 rounded-md flex justify-between items-center"
+                >
+                  <span className="truncate flex items-center gap-2">
+                    {/* Built-in options */}
+                    {selectedFolderId === "all" && (
+                      <>
+                        <span className="inline-flex items-center justify-center w-5 h-5 bg-gray-600 rounded-sm">
+                          <Folder className="w-3 h-3 text-white" />
+                        </span>
+                        All Boards
+                      </>
+                    )}
+
+                    {selectedFolderId === "favourites" && (
+                      <>
+                        <span className="inline-flex items-center justify-center w-5 h-5 bg-yellow-600 rounded-sm">
+                          <Star className="w-3 h-3 text-white" />
+                        </span>
+                        Favourites
+                      </>
+                    )}
+
+                    {selectedFolderId === "none" && (
+                      <>
+                        <span className="inline-flex items-center justify-center w-5 h-5 bg-gray-700 rounded-sm">
+                          <Ban className="w-3 h-3 text-white" />
+                        </span>
+                        No Folder
+                      </>
+                    )}
+
+                    {/* Actual folder */}
+                    {data.folders[selectedFolderId] &&
+                      (() => {
+                        const folder = data.folders[selectedFolderId];
+                        const Icon = ICONS[folder.icon] || Folder;
+                        return (
+                          <>
+                            <span
+                              className="inline-flex items-center justify-center w-5 h-5 rounded-sm"
+                              style={{ background: folder.color }}
+                            >
+                              <Icon className="w-3 h-3 text-white" />
+                            </span>
+                            {folder.name}
+                          </>
+                        );
+                      })()}
+                  </span>
+                  <span>▾</span>
+                </button>
+
+                {/* Dropdown Menu */}
+                {dropdownOpen && (
+                  <div className="absolute z-50 mt-2 w-full bg-[#2a2a2a] rounded-md shadow-lg py-1">
+                    {/* All Boards */}
+                    <div
+                      className="px-3 py-2 hover:bg-[#2a2a2a] cursor-pointer flex items-center gap-2"
+                      onClick={() => {
+                        setSelectedFolderId("all");
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      <span className="inline-flex items-center justify-center w-5 h-5 bg-gray-600 rounded-sm">
+                        <Folder className="w-3 h-3 text-white" />
+                      </span>
+                      All Boards
+                    </div>
+
+                    {/* favourites */}
+                    <div
+                      className="px-3 py-2 hover:bg-[#2a2a2a] cursor-pointer flex items-center gap-2"
+                      onClick={() => {
+                        setSelectedFolderId("favourites");
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      <span className="inline-flex items-center justify-center w-5 h-5 bg-yellow-600 rounded-sm">
+                        <Star className="w-3 h-3 text-white" />
+                      </span>
+                      Favourites
+                    </div>
+
+                    {/* no folder */}
+                    <div
+                      className="px-3 py-2 hover:bg-[#2a2a2a] cursor-pointer flex items-center gap-2"
+                      onClick={() => {
+                        setSelectedFolderId("none");
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      <span className="inline-flex items-center justify-center w-5 h-5 bg-gray-700 rounded-sm">
+                        <Ban className="w-3 h-3 text-white" />
+                      </span>
+                      No Folder
+                    </div>
+
+                    {/* User Folders */}
+                    {Object.values(data.folders || {}).map((folder) => {
+                      const Icon = ICONS[folder.icon] || Folder;
+                      return (
+                        <div
+                          key={folder.id}
+                          className="px-3 py-2 hover:bg-[#2a2a2a] cursor-pointer flex items-center gap-2"
+                          onClick={() => {
+                            setSelectedFolderId(folder.id);
+                            setDropdownOpen(false);
+                          }}
+                        >
+                          <span
+                            className="inline-flex items-center justify-center w-5 h-5 rounded-sm"
+                            style={{ background: folder.color }}
+                          >
+                            <Icon className="w-3 h-3 text-white" />
+                          </span>
+                          {folder.name}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-4 py-4 justify-start">
+                {/* ---------- ALL BOARDS ---------- */}
+                {selectedFolderId === "all" &&
+                  Object.values(data.boards || {}).map((board) => {
+                    const Icon = ICONS[board.icon] || Brush;
+                    const folder = board.folderId
+                      ? data.folders[board.folderId]
+                      : null;
+
+                    return (
+                      <div
+                        key={board.id}
+                        className="board-card-container w-36 h-36 bg-[#202020] hover:bg-[#2a2a2a] rounded-md flex flex-col justify-between shadow-sm hover:shadow-md transition transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
+                        onClick={() => openBoard(board.id)}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          handleMenuClick(e, board.id);
+                        }}
+                      >
+                        <div
+                          className="h-3 w-full rounded-t-lg"
+                          style={{
+                            backgroundColor: folder?.color || "#6b7280",
+                          }}
+                        ></div>
+
+                        <div className="p-3 flex flex-col gap-5 h-full">
+                          <div className="flex items-center justify-between">
+                            <div
+                              className="p-1 rounded hover:bg-[#3a3a3a] transition hover:scale-110"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startEditingIcon(board.id);
+                              }}
+                            >
+                              <Icon className="w-6 h-6 text-white" />
+                            </div>
+
+                            <span
+                              className="text-white p-1 rounded hover:bg-[#3a3a3a]"
+                              onClick={(e) => handleMenuClick(e, board.id)}
+                            >
+                              <Ellipsis />
+                            </span>
+                          </div>
+
+                          <div>
+                            <h3
+                              className="text-white text-md truncate"
+                              onDoubleClick={() =>
+                                startRenaming(board.id, board.name)
+                              }
+                            >
+                              {board.name}
+                            </h3>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {timeAgo(board.updatedAt)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                {/* ---------- FAVOURITES ---------- */}
+                {selectedFolderId === "favourites" &&
+                  Object.values(data.boards || {})
+                    .filter((board) => board.isFavourite)
+                    .sort(
+                      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+                    )
+                    .map((board) => {
+                      const Icon = ICONS[board.icon] || Brush;
+                      const folder = board.folderId
+                        ? data.folders[board.folderId]
+                        : null;
+
+                      return (
+                        <div
+                          key={board.id}
+                          className="board-card-container w-36 h-36 bg-[#202020] hover:bg-[#2a2a2a] rounded-md flex flex-col justify-between shadow-sm hover:shadow-md transition transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
+                          onClick={() => openBoard(board.id)}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            handleMenuClick(e, board.id);
+                          }}
+                        >
+                          <div
+                            className="h-3 w-full rounded-t-lg"
+                            style={{
+                              backgroundColor: folder?.color || "#6b7280",
+                            }}
+                          ></div>
+
+                          <div className="p-3 flex flex-col gap-5 h-full">
+                            <div className="flex items-center justify-between">
+                              <div
+                                className="p-1 rounded hover:bg-[#3a3a3a] transition hover:scale-110"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  startEditingIcon(board.id);
+                                }}
+                              >
+                                <Icon className="w-6 h-6 text-white" />
+                              </div>
+
+                              <span
+                                className="text-white p-1 rounded hover:bg-[#3a3a3a]"
+                                onClick={(e) => handleMenuClick(e, board.id)}
+                              >
+                                <Ellipsis />
+                              </span>
+                            </div>
+
+                            <div>
+                              <h3
+                                className="text-white text-md truncate"
+                                onDoubleClick={() =>
+                                  startRenaming(board.id, board.name)
+                                }
+                              >
+                                {board.name}
+                              </h3>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {timeAgo(board.updatedAt)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                {/* ---------- NO FOLDER ---------- */}
+                {selectedFolderId === "none" &&
+                  Object.values(data.boards || {})
+                    .filter((board) => !board.folderId)
+                    .sort(
+                      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+                    )
+                    .map((board) => {
+                      const Icon = ICONS[board.icon] || Brush;
+
+                      return (
+                        <div
+                          key={board.id}
+                          className="board-card-container w-36 h-36 bg-[#202020] hover:bg-[#2a2a2a] rounded-md flex flex-col justify-between shadow-sm hover:shadow-md transition transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
+                          onClick={() => openBoard(board.id)}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            handleMenuClick(e, board.id);
+                          }}
+                        >
+                          <div
+                            className="h-3 w-full rounded-t-lg"
+                            style={{ backgroundColor: "#6b7280" }}
+                          ></div>
+
+                          <div className="p-3 flex flex-col gap-5 h-full">
+                            <div className="flex items-center justify-between">
+                              <div
+                                className="p-1 rounded hover:bg-[#3a3a3a] transition hover:scale-110"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  startEditingIcon(board.id);
+                                }}
+                              >
+                                <Icon className="w-6 h-6 text-white" />
+                              </div>
+
+                              <span
+                                className="text-white p-1 rounded hover:bg-[#3a3a3a]"
+                                onClick={(e) => handleMenuClick(e, board.id)}
+                              >
+                                <Ellipsis />
+                              </span>
+                            </div>
+
+                            <div>
+                              <h3
+                                className="text-white text-md truncate"
+                                onDoubleClick={() =>
+                                  startRenaming(board.id, board.name)
+                                }
+                              >
+                                {board.name}
+                              </h3>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {timeAgo(board.updatedAt)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                {/* ---------- SPECIFIC FOLDER ---------- */}
+                {selectedFolderId !== "all" &&
+                  selectedFolderId !== "favourites" &&
+                  selectedFolderId !== "none" &&
+                  (data.folders[selectedFolderId]?.boards || [])
+                    .map((id) => data.boards[id])
+                    .filter(Boolean)
+                    .map((board) => {
+                      const Icon = ICONS[board.icon] || Brush;
+                      const folder = data.folders[selectedFolderId];
+
+                      return (
+                        <div
+                          key={board.id}
+                          className="board-card-container w-36 h-36 bg-[#202020] hover:bg-[#2a2a2a] rounded-md flex flex-col justify-between shadow-sm hover:shadow-md transition transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
+                          onClick={() => openBoard(board.id)}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            handleMenuClick(e, board.id);
+                          }}
+                        >
+                          <div
+                            className="h-3 w-full rounded-t-lg"
+                            style={{
+                              backgroundColor: folder?.color || "#6b7280",
+                            }}
+                          ></div>
+
+                          <div className="p-3 flex flex-col gap-5 h-full">
+                            <div className="flex items-center justify-between">
+                              <div
+                                className="p-1 rounded hover:bg-[#3a3a3a] transition hover:scale-110"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  startEditingIcon(board.id);
+                                }}
+                              >
+                                <Icon className="w-6 h-6 text-white" />
+                              </div>
+
+                              <span
+                                className="text-white p-1 rounded hover:bg-[#3a3a3a]"
+                                onClick={(e) => handleMenuClick(e, board.id)}
+                              >
+                                <Ellipsis />
+                              </span>
+                            </div>
+
+                            <div>
+                              <h3
+                                className="text-white text-md truncate"
+                                onDoubleClick={() =>
+                                  startRenaming(board.id, board.name)
+                                }
+                              >
+                                {board.name}
+                              </h3>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {timeAgo(board.updatedAt)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
               </div>
             </section>
 
@@ -1114,7 +1589,8 @@ export default function DashboardPage() {
                       onClick={() => {
                         setEditingBoardId(null);
                         setErrorMessage("");
-                      }}>
+                      }}
+                    >
                       Cancel
                     </Button>
                     <Button onClick={() => saveBoardName(editingBoardId)}>
@@ -1137,7 +1613,8 @@ export default function DashboardPage() {
                         <div
                           key={iconName}
                           className="cursor-pointer p-2 hover:bg-gray-700 rounded-md flex items-center justify-center transition-transform hover:scale-110"
-                          onClick={() => saveIcon(editingIconId, iconName)}>
+                          onClick={() => saveIcon(editingIconId, iconName)}
+                        >
                           <Icon className="w-6 h-6 text-gray-300" />
                         </div>
                       );
@@ -1146,7 +1623,8 @@ export default function DashboardPage() {
                   <div className="flex justify-end">
                     <Button
                       variant="outline"
-                      onClick={() => setEditingIconId(null)}>
+                      onClick={() => setEditingIconId(null)}
+                    >
                       Cancel
                     </Button>
                   </div>
@@ -1185,7 +1663,8 @@ export default function DashboardPage() {
                               folderForm.icon === iconName
                                 ? "bg-[#333]"
                                 : "hover:bg-[#2a2a2a]"
-                            }`}>
+                            }`}
+                          >
                             <Icon className="w-5 h-5 text-gray-200" />
                           </button>
                         );
@@ -1214,7 +1693,8 @@ export default function DashboardPage() {
                   <div className="flex justify-end gap-2">
                     <Button
                       variant="outline"
-                      onClick={() => setCreateFolderModalOpen(false)}>
+                      onClick={() => setCreateFolderModalOpen(false)}
+                    >
                       Cancel
                     </Button>
                     <Button onClick={createFolder}>Create</Button>
@@ -1254,7 +1734,8 @@ export default function DashboardPage() {
                               folderForm.icon === iconName
                                 ? "bg-[#333]"
                                 : "hover:bg-[#2a2a2a]"
-                            }`}>
+                            }`}
+                          >
                             <Icon className="w-5 h-5 text-gray-200" />
                           </button>
                         );
@@ -1286,7 +1767,8 @@ export default function DashboardPage() {
                       onClick={() => {
                         setEditFolderModalOpen(false);
                         setSelectedFolderId(null);
-                      }}>
+                      }}
+                    >
                       Cancel
                     </Button>
                     <Button onClick={saveEditFolder}>Save</Button>
@@ -1309,7 +1791,8 @@ export default function DashboardPage() {
                       variant="outline"
                       onClick={() =>
                         setDeleteFolderConfirm({ open: false, folderId: null })
-                      }>
+                      }
+                    >
                       Cancel
                     </Button>
                     <Button onClick={deleteFolder}>Delete Folder</Button>
