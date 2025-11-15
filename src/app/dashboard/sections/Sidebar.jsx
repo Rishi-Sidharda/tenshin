@@ -316,7 +316,7 @@ export default function Sidebar({
           <button
             title="Documentation"
             onClick={() => {
-              // handle docs click
+              window.location.href = "/documentation";
             }}
             className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors"
           >
