@@ -6,10 +6,6 @@ import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Ban,
-  Ellipsis,
-  Search,
-  PackagePlus,
   Brush,
   PenTool,
   Rocket,
@@ -21,20 +17,17 @@ import {
   Folder,
   Bolt,
   PaintBucket,
-  ChevronRight,
-  ChevronDown,
-  BookOpenText,
-  MoreHorizontal,
-  UserRoundCog,
-  ScrollText,
-  Settings,
-  LucideLogOut,
 } from "lucide-react";
 import BoardMenu from "./BoardMenu";
 import FolderMenu from "./FolderMenu";
 import Sidebar from "./Sidebar";
 import RecentBoards from "./RecentBoardSection";
 import SelectFolderViewSection from "./SelectFolderViewSection";
+import RenameBoardModal from "./RenameBoardModal";
+import IconPickerModal from "./IconPickerModal";
+import CreateFolderModal from "./CreateFolderModal";
+import EditFolderModal from "./EditFolderModal";
+import DeleteFolderModal from "./DeleteFolderModal";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -648,235 +641,66 @@ export default function DashboardPage() {
 
             {/* Rename Board Modal */}
             {editingBoardId && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div className="bg-[#1a1a1a] p-6 rounded-xl w-80 shadow-xl">
-                  <h2 className="text-lg text-white mb-4">Rename Board</h2>
-                  <Input
-                    value={newBoardName}
-                    onChange={(e) => setNewBoardName(e.target.value)}
-                    placeholder="Enter new board name"
-                    className="mb-4"
-                    autoFocus
-                  />
-                  {errorMessage && (
-                    <p className="text-red-500 text-sm mb-2">{errorMessage}</p>
-                  )}
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant=""
-                      onClick={() => {
-                        setEditingBoardId(null);
-                        setErrorMessage("");
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={() => saveBoardName(editingBoardId)}>
-                      Save
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <RenameBoardModal
+                newBoardName={newBoardName}
+                setNewBoardName={setNewBoardName}
+                saveBoardName={saveBoardName}
+                setEditingBoardId={setEditingBoardId}
+                editingBoardId={editingBoardId}
+                errorMessage={errorMessage}
+                setErrorMessage={setErrorMessage}
+              />
             )}
 
             {/* Icon Picker Modal */}
             {editingIconId && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div className="bg-[#1a1a1a] p-6 rounded-xl w-80 shadow-xl">
-                  <h2 className="text-lg text-white mb-4">Choose an Icon</h2>
-                  <div className="grid grid-cols-6 gap-3 mb-4">
-                    {availableIcons.map((iconName) => {
-                      const Icon = ICONS[iconName];
-                      return (
-                        <div
-                          key={iconName}
-                          className="cursor-pointer p-2 hover:bg-gray-700 rounded-md flex items-center justify-center transition-transform hover:scale-110"
-                          onClick={() => saveIcon(editingIconId, iconName)}
-                        >
-                          <Icon className="w-6 h-6 text-gray-300" />
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="flex justify-end">
-                    <Button
-                      variant="outline"
-                      onClick={() => setEditingIconId(null)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <IconPickerModal
+                availableIcons={availableIcons}
+                ICONS={ICONS}
+                editingIconId={editingIconId}
+                saveIcon={saveIcon}
+                setEditingIconId={setEditingIconId}
+              />
             )}
 
             {/* Create Folder Modal */}
             {createFolderModalOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div className="bg-[#1a1a1a] p-6 rounded-xl w-96 shadow-xl">
-                  <h2 className="text-lg text-white mb-4">Create Folder</h2>
-                  <Input
-                    value={folderForm.name}
-                    onChange={(e) =>
-                      setFolderForm((s) => ({ ...s, name: e.target.value }))
-                    }
-                    placeholder="Folder name"
-                    className="mb-4"
-                    autoFocus
-                  />
-                  <div className="mb-3">
-                    <div className="text-sm text-gray-300 mb-2">
-                      Pick an icon
-                    </div>
-                    <div className="flex gap-2 overflow-x-auto mb-2">
-                      {availableIcons.map((iconName) => {
-                        const Icon = ICONS[iconName];
-                        return (
-                          <button
-                            key={iconName}
-                            onClick={() =>
-                              setFolderForm((s) => ({ ...s, icon: iconName }))
-                            }
-                            className={`p-2 rounded ${
-                              folderForm.icon === iconName
-                                ? "bg-[#333]"
-                                : "hover:bg-[#2a2a2a]"
-                            }`}
-                          >
-                            <Icon className="w-5 h-5 text-gray-200" />
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <div className="text-sm text-gray-300 mb-2">
-                      Pick a color
-                    </div>
-                    <div className="flex gap-2">
-                      {FOLDER_COLORS.map((c) => (
-                        <button
-                          key={c}
-                          onClick={() =>
-                            setFolderForm((s) => ({ ...s, color: c }))
-                          }
-                          className={`w-8 h-8 rounded ${
-                            folderForm.color === c ? "ring-2 ring-offset-1" : ""
-                          }`}
-                          style={{ background: c }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setCreateFolderModalOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={createFolder}>Create</Button>
-                  </div>
-                </div>
-              </div>
+              <CreateFolderModal
+                folderForm={folderForm}
+                setFolderForm={setFolderForm}
+                availableIcons={availableIcons}
+                ICONS={ICONS}
+                FOLDER_COLORS={FOLDER_COLORS}
+                createFolder={createFolder}
+                onClose={() => setCreateFolderModalOpen(false)}
+              />
             )}
 
             {/* Edit Folder Modal */}
             {editFolderModalOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div className="bg-[#1a1a1a] p-6 rounded-xl w-96 shadow-xl">
-                  <h2 className="text-lg text-white mb-4">Edit Folder</h2>
-                  <Input
-                    value={folderForm.name}
-                    onChange={(e) =>
-                      setFolderForm((s) => ({ ...s, name: e.target.value }))
-                    }
-                    placeholder="Folder name"
-                    className="mb-4"
-                    autoFocus
-                  />
-                  <div className="mb-3">
-                    <div className="text-sm text-gray-300 mb-2">
-                      Pick an icon
-                    </div>
-                    <div className="flex gap-2 overflow-x-auto mb-2">
-                      {availableIcons.map((iconName) => {
-                        const Icon = ICONS[iconName];
-                        return (
-                          <button
-                            key={iconName}
-                            onClick={() =>
-                              setFolderForm((s) => ({ ...s, icon: iconName }))
-                            }
-                            className={`p-2 rounded ${
-                              folderForm.icon === iconName
-                                ? "bg-[#333]"
-                                : "hover:bg-[#2a2a2a]"
-                            }`}
-                          >
-                            <Icon className="w-5 h-5 text-gray-200" />
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <div className="text-sm text-gray-300 mb-2">
-                      Pick a color
-                    </div>
-                    <div className="flex gap-2">
-                      {FOLDER_COLORS.map((c) => (
-                        <button
-                          key={c}
-                          onClick={() =>
-                            setFolderForm((s) => ({ ...s, color: c }))
-                          }
-                          className={`w-8 h-8 rounded ${
-                            folderForm.color === c ? "ring-2 ring-offset-1" : ""
-                          }`}
-                          style={{ background: c }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setEditFolderModalOpen(false);
-                        setSelectedFolderId(null);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={saveEditFolder}>Save</Button>
-                  </div>
-                </div>
-              </div>
+              <EditFolderModal
+                folderForm={folderForm}
+                setFolderForm={setFolderForm}
+                availableIcons={availableIcons}
+                ICONS={ICONS}
+                FOLDER_COLORS={FOLDER_COLORS}
+                saveEditFolder={saveEditFolder}
+                onClose={() => {
+                  setEditFolderModalOpen(false);
+                  setSelectedFolderId(null);
+                }}
+              />
             )}
 
             {/* Delete Folder Confirmation */}
             {deleteFolderConfirm.open && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div className="bg-[#1a1a1a] p-6 rounded-xl w-96 shadow-xl">
-                  <h2 className="text-lg text-white mb-4">Delete folder</h2>
-                  <p className="text-sm text-gray-300 mb-4">
-                    Are you sure you want to delete this folder? Boards inside
-                    will move to "No Folder".
-                  </p>
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        setDeleteFolderConfirm({ open: false, folderId: null })
-                      }
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={deleteFolder}>Delete Folder</Button>
-                  </div>
-                </div>
-              </div>
+              <DeleteFolderModal
+                deleteFolderConfirm={deleteFolderConfirm}
+                onClose={() =>
+                  setDeleteFolderConfirm({ open: false, folderId: null })
+                }
+                deleteFolder={deleteFolder}
+              />
             )}
           </div>
         </div>
