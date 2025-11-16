@@ -78,7 +78,7 @@ export default function DashboardPage() {
   });
 
   // context: when user clicks a folder in sidebar, this becomes selected; new boards created while selected go into that folder
-  const [selectedFolderId, setSelectedFolderId] = useState("all");
+  const [selectedFolderId, setSelectedFolderId] = useState("none");
 
   // icons and colors
   const ICONS = {

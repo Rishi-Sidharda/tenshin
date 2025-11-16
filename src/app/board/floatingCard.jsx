@@ -24,14 +24,6 @@ After a successful authentication, you’ll receive a JSON response that incl\\n
 # Sample Request
 `;
 
-/**
- * A floating modal card component containing a simple Markdown editor.
- * @param {object} props
- * @param {function} props.onClose - Function to call when the card should close.
- * @param {function} props.onSave - Function to call when the save button is clicked,
- * receiving the edited markdown content as an argument.
- * @returns {JSX.Element}
- */
 export default function FloatingCard({ onClose, onSave }) {
   const containerRef = useRef(null);
   const [markdownContent, setMarkdownContent] = useState(placeholderMarkdown);
@@ -55,9 +47,6 @@ export default function FloatingCard({ onClose, onSave }) {
     setMarkdownContent(event.target.value);
   };
 
-  // Handler for the Save button click:
-  // 1. Calls the onSave function (prop).
-  // 2. Calls the onClose function (prop).
   const handleSave = () => {
     // 1. Run the save function
     drawExcalidrawElements("markdown", markdownContent);
@@ -66,100 +55,62 @@ export default function FloatingCard({ onClose, onSave }) {
 
   return (
     <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-        backdropFilter: "blur(4px)",
-      }}
+      className="
+      fixed inset-0 w-full h-full 
+      bg-black/50 backdrop-blur-sm 
+      flex justify-center items-center 
+      z-1000
+    "
     >
       <div
         ref={containerRef}
-        style={{
-          width: "50%",
-          height: "90%",
-          backgroundColor: "#101010",
-          borderRadius: "12px",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.2)",
-          padding: "40px",
-          overflowY: "auto",
-          fontFamily: "Inter, sans-serif",
-          display: "flex",
-          flexDirection: "column",
-        }}
+        className="
+          w-1/2 h-[90%] bg-[#101010] 
+          rounded-xl shadow-2xl 
+          p-10 overflow-y-auto 
+          font-inter flex flex-col
+        "
       >
-        {/* Markdown Editor (Textarea) */}
+        {/* Markdown Editor */}
         <textarea
           value={markdownContent}
           onChange={handleEditorChange}
           spellCheck="false"
-          style={{
-            flexGrow: 1,
-            width: "100%",
-            minHeight: "100px",
-            padding: "15px",
-            border: "1px solid #333333",
-            borderRadius: "8px",
-            backgroundColor: "#1e1e1e",
-            color: "#cccccc",
-            fontSize: "16px",
-            lineHeight: "1.6",
-            fontFamily: "monospace",
-            resize: "none",
-            boxSizing: "border-box",
-            outline: "none",
-            marginBottom: "20px",
-          }}
           placeholder="Start writing your Markdown here..."
+          className="
+            flex-grow w-full min-h-[100px]
+            p-4 border border-[#333333]
+            rounded-lg bg-[#1e1e1e] text-[#cccccc]
+            text-base leading-relaxed font-mono
+            resize-none box-border outline-none
+            mb-5
+          "
         />
 
-        {/* Buttons Container */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: "10px",
-          }}
-        >
-          {/* Cancel Button (calls onClose) */}
+        {/* Buttons */}
+        <div className="flex justify-end gap-3">
+          {/* Cancel Button */}
           <button
             onClick={onClose}
-            style={{
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "6px",
-              backgroundColor: "#2e2e2e",
-              color: "#cccccc",
-              cursor: "pointer",
-              fontSize: "16px",
-              fontFamily: "inherit",
-            }}
+            className="
+              px-5 py-2 rounded-md 
+              bg-[#2e2e2e] text-[#cccccc] 
+              text-base cursor-pointer
+            "
           >
             Cancel
           </button>
 
-          {/* Save Button (calls handleSave -> onSave & onClose) */}
+          {/* Save Button */}
           <button
             onClick={handleSave}
-            style={{
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "6px",
-              backgroundColor: "#007acc",
-              color: "white",
-              cursor: "pointer",
-              fontSize: "16px",
-              fontWeight: "bold",
-              fontFamily: "inherit",
-              transition: "background-color 0.2s",
-            }}
+            className="
+              px-5 py-2 rounded-md 
+              bg-[#007acc] text-white 
+              text-base font-bold cursor-pointer 
+              transition-colors duration-200
+              hover:bg-[#0090ff]
+            "
           >
             Save Markdown
           </button>
