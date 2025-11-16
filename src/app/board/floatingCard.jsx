@@ -55,15 +55,13 @@ export default function FloatingCard({ onClose, onSave }) {
     setMarkdownContent(event.target.value);
   };
 
-  // Handler for the Save button click: 
+  // Handler for the Save button click:
   // 1. Calls the onSave function (prop).
   // 2. Calls the onClose function (prop).
   const handleSave = () => {
     // 1. Run the save function
-    drawExcalidrawElements("markdown", markdownContent)
-    
-    // 2. Close the modal
-    onClose?.(); 
+    drawExcalidrawElements("markdown", markdownContent);
+    onClose?.();
   };
 
   return (
@@ -103,21 +101,21 @@ export default function FloatingCard({ onClose, onSave }) {
           onChange={handleEditorChange}
           spellCheck="false"
           style={{
-            flexGrow: 1, 
+            flexGrow: 1,
             width: "100%",
-            minHeight: "100px", 
+            minHeight: "100px",
             padding: "15px",
             border: "1px solid #333333",
             borderRadius: "8px",
-            backgroundColor: "#1e1e1e", 
-            color: "#cccccc", 
+            backgroundColor: "#1e1e1e",
+            color: "#cccccc",
             fontSize: "16px",
             lineHeight: "1.6",
-            fontFamily: "monospace", 
-            resize: "none", 
+            fontFamily: "monospace",
+            resize: "none",
             boxSizing: "border-box",
             outline: "none",
-            marginBottom: "20px", 
+            marginBottom: "20px",
           }}
           placeholder="Start writing your Markdown here..."
         />
@@ -126,8 +124,8 @@ export default function FloatingCard({ onClose, onSave }) {
         <div
           style={{
             display: "flex",
-            justifyContent: "flex-end", 
-            gap: "10px", 
+            justifyContent: "flex-end",
+            gap: "10px",
           }}
         >
           {/* Cancel Button (calls onClose) */}

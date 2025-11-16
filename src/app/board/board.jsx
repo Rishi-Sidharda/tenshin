@@ -7,12 +7,6 @@ import "@excalidraw/excalidraw/index.css";
 import { setExcalidrawApi } from "./boardApi";
 import FloatingCard from "./floatingCard";
 import CommandPallet from "./commandPallet";
-import { Menu, Settings, UserRoundCog } from "lucide-react";
-import {
-  SquareChevronRight,
-  LayoutDashboard,
-  SquareChevronLeft,
-} from "lucide-react";
 
 const Excalidraw = dynamic(
   async () => (await import("@excalidraw/excalidraw")).Excalidraw,
@@ -25,7 +19,8 @@ const Excalidraw = dynamic(
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         Loading board...
       </div>
     ),
@@ -42,6 +37,62 @@ export default function Board() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showMarkdownButton, setShowMarkdownButton] = useState(false);
+
+  const [selectedMarkdownText, setSelectedMarkdownText] = useState(null);
+  const [selectedMarkdownGroupId, setSelectedMarkdownGroupId] = useState(null);
+  const [showDeleteMarkdownButton, setShowDeleteMarkdownButton] =
+    useState(false);
+
+  const BOARD_DATA_KEY = "boardData";
+
+  const handleChange = (elements, state) => {
+    const { selectedElementIds } = state;
+
+    // No selection, hide button and clear text
+    if (!selectedElementIds || Object.keys(selectedElementIds).length === 0) {
+      setShowMarkdownButton(false);
+      setSelectedMarkdownText(null);
+      return;
+    }
+
+    // Get selected elements
+    const selectedElements = elements.filter((el) => selectedElementIds[el.id]);
+
+    // Find first markdown element among selection
+    const markdownElement = selectedElements.find((el) =>
+      el.groupIds?.some((id) => id.startsWith("markdown-"))
+    );
+
+    if (markdownElement) {
+      // Show the markdown button
+      setShowMarkdownButton(true);
+      setShowDeleteMarkdownButton(true);
+
+      // Get the first markdown groupId
+      const markdownGroupId = markdownElement.groupIds.find((id) =>
+        id.startsWith("markdown-")
+      );
+
+      // Load board data from localStorage
+      const boardDataRaw = localStorage.getItem(BOARD_DATA_KEY);
+      const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};
+
+      // Get the markdown text from registry
+      const markdownTextRaw =
+        boardsData[boardId]?.markdown_registry?.[markdownGroupId]?.text || "";
+      const markdownGroupIdRaw =
+        boardsData[boardId]?.markdown_registry?.[markdownGroupId]?.id || "";
+
+      // Set state
+      setSelectedMarkdownText(markdownTextRaw);
+      setSelectedMarkdownGroupId(markdownGroupIdRaw);
+    } else {
+      // No markdown element selected
+      setShowMarkdownButton(false);
+      setSelectedMarkdownText(null);
+      setShowDeleteMarkdownButton(false);
+    }
+  };
 
   // ✅ Register the Excalidraw API
   useEffect(() => {
@@ -101,6 +152,38 @@ export default function Board() {
     }
   }, [api, boardId, isLoaded]);
 
+  const deleteMarkdown = () => {
+    if (!selectedMarkdownGroupId) return;
+
+    // 1️⃣ Remove matching elements from the canvas
+    const currentElements = api.getSceneElements();
+    const updatedElements = currentElements.filter(
+      (el) => !el.groupIds?.includes(selectedMarkdownGroupId)
+    );
+
+    api.updateScene({ elements: updatedElements });
+
+    const boardDataRaw = localStorage.getItem(BOARD_DATA_KEY);
+    const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};
+
+    if (boardsData[boardId]?.markdown_registry) {
+      delete boardsData[boardId].markdown_registry[selectedMarkdownGroupId];
+    }
+
+    localStorage.setItem(BOARD_DATA_KEY, JSON.stringify(boardsData));
+
+    console.log(
+      "Deleted markdown:",
+      selectedMarkdownGroupId,
+      "and its associated elements."
+    );
+
+    // 3️⃣ Reset UI state
+    setSelectedMarkdownText(null);
+    setShowMarkdownButton(false);
+    setShowDeleteMarkdownButton(false);
+  };
+
   // ✅ Manual Save Button handler
   const handleSave = () => {
     if (!api || !boardId) return;
@@ -125,17 +208,24 @@ export default function Board() {
 
     const oldContent = boardsData[boardId] || {};
 
-    // Update content
+    // Read markdown registry from some state or default
+    // Replace this with your actual markdown state if needed
+    const markdownRegistryState = oldContent.markdown_registry || {};
+
+    // Update board data
     boardsData[boardId] = {
       elements,
       appState: safeAppState,
       files,
+      markdown_registry: { ...markdownRegistryState },
     };
 
-    // Update metadata.updatedAt only if elements/files changed
+    // Check if anything changed
     const hasChanged =
       JSON.stringify(oldContent.elements) !== JSON.stringify(elements) ||
-      JSON.stringify(oldContent.files) !== JSON.stringify(files);
+      JSON.stringify(oldContent.files) !== JSON.stringify(files) ||
+      JSON.stringify(oldContent.markdown_registry) !==
+        JSON.stringify(boardsData[boardId].markdown_registry);
 
     if (hasChanged) {
       if (!tenshin.boards[boardId]) {
@@ -163,97 +253,102 @@ export default function Board() {
           position: "relative",
           width: "100%",
           height: "100vh",
-        }}>
+        }}
+      >
         <Excalidraw
           theme="dark"
           excalidrawAPI={(excalidrawApi) => setApi(excalidrawApi)}
           onChange={(elements, state) => {
-            const { selectedElementIds } = state;
-            if (
-              !selectedElementIds ||
-              Object.keys(selectedElementIds).length === 0
-            )
-              return;
+            handleChange(elements, state);
+          }}
+          renderTopRightUI={() => {
+            if (showMarkdownButton) {
+              return (
+                <button
+                  className="text-xs font-outfit"
+                  style={{
+                    top: "16px",
+                    left: "16px",
+                    zIndex: 10,
+                    background: "#232329",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "8px 10px",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+                  }}
+                  onClick={() => {
+                    console.log("Markdown text:", selectedMarkdownText);
+                    console.log("id:", selectedMarkdownGroupId);
 
-            const selectedElements = elements.filter(
-              (el) => selectedElementIds[el.id]
-            );
-            const markdownSelected = selectedElements.some((el) =>
-              el.groupIds?.some((id) => id.startsWith("markdown-"))
-            );
+                    const rect = api
+                      ?.getSceneElements()
+                      ?.find(
+                        (el) =>
+                          el.type === "rectangle" &&
+                          el.groupIds?.includes(selectedMarkdownGroupId)
+                      );
 
-            setShowMarkdownButton(markdownSelected);
+                    if (rect) {
+                      console.log("Markdown rectangle position:", {
+                        x: rect.x,
+                        y: rect.y,
+                      });
+                    } else {
+                      console.log("Markdown rectangle NOT FOUND");
+                    }
+                  }}
+                >
+                  Markdown Options
+                </button>
+              );
+            }
+
+            // Default: show Add Component button
+            return (
+              <div
+                style={{
+                  top: "17px",
+                  right: "16px",
+                  zIndex: 10,
+                  display: "flex", // not inline-flex
+                  flexDirection: "column",
+                  alignItems: "center", // centers hint under the button
+                  pointerEvents: "none", // container doesn't block clicks
+                }}
+              >
+                <button
+                  onClick={() => setShowCommandPallet(true)}
+                  className="text-xs font-outfit hover:bg-[#2a2a2a]"
+                  style={{
+                    background: "#232329",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "10px 10px",
+                    cursor: "pointer",
+                    pointerEvents: "auto", // button remains clickable
+                  }}
+                >
+                  Command Palette
+                </button>
+
+                <span
+                  className="font-outfit"
+                  style={{
+                    fontSize: "10px",
+                    opacity: 0.6,
+                    color: "white",
+                    marginTop: "2px",
+                  }}
+                >
+                  " Ctrl + / "
+                </span>
+              </div>
+            );
           }}
-          UIOptions={{
-            canvasActions: {
-              changeColor: true,
-            },
-            renderCustomUI: true,
-          }}
-          defaultOptions={{
-            elementBackgroundColor: "red",
-            primaryColor: "red",
-          }}
-          renderTopLeftUI={() => (
-            <button
-              onClick={() => setShowCommandPallet(true)}
-              className="text-xs"
-              style={{
-                top: "16px",
-                left: "16px",
-                position: "absolute",
-                zIndex: 10,
-                background: "#232329",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                padding: "8px 10px",
-                cursor: "pointer",
-                boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-              }}>
-              Add Component
-            </button>
-          )}
-          renderTopRightUI={() => (
-            <button
-              onClick={() => setShowCommandPallet(true)}
-              className="text-xs"
-              style={{
-                top: "16px",
-                right: "16px",
-                position: "absolute",
-                zIndex: 10,
-                background: "#232329",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                padding: "8px 10px",
-                cursor: "pointer",
-                boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-              }}>
-              Add Component
-            </button>
-          )}
         />
-
-{showMarkdownButton && (
-        <button
-          style={{
-            position: "absolute",
-            top: 20,
-            right: 20,
-            padding: "10px 16px",
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-          onClick={() => alert("Markdown button clicked!")}
-        >
-          Markdown Options
-        </button>
-      )}
 
         {/* Save Button */}
         <button
@@ -272,7 +367,8 @@ export default function Board() {
             boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
             transition: "all 0.2s ease-in-out",
             zIndex: 50,
-          }}>
+          }}
+        >
           {isSaving ? "✅ Saved!" : "💾 Save Board"}
         </button>
 

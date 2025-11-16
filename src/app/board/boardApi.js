@@ -65,7 +65,7 @@ export const drawExcalidrawElements = async (component, markdown) => {
     });
 
     // Wait briefly to ensure the renderer updates
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 150));
 
     const markdownText = `${markdown}`;
 

@@ -161,7 +161,7 @@ export default function Sidebar({
                         e.stopPropagation();
                         toggleFolderCollapse(folder.id);
                       }}
-                      className="px-1 py-2 text-gray-400 hover:text-gray-200 transition-colors duration-150 rounded flex-shrink-0"
+                      className="px-1 py-2 text-gray-400 hover:text-gray-200 transition-colors duration-150 rounded shrink-0"
                     >
                       {isCollapsed ? (
                         <ChevronRight className="w-4 h-4" />
@@ -200,7 +200,7 @@ export default function Sidebar({
                         handleFolderMenuClick(e, folder.id);
                       }}
                       aria-label="Folder options"
-                      className="p-1 text-gray-400 hover:text-gray-200 rounded flex-shrink-0"
+                      className="p-1 text-gray-400 hover:text-gray-200 rounded shrink-0"
                     >
                       <MoreHorizontal className="w-4 h-4" />
                     </button>

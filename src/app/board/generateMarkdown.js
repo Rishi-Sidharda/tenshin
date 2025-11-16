@@ -1,60 +1,78 @@
 // generateMarkdown.js
 
+const STORAGE_KEY = "tenshin";
+const BOARD_DATA_KEY = "boardData";
+
 const generateGroupId = () =>
   `markdown-${Math.random().toString(36).substr(2, 9)}`;
 
-// Approximate text wrapping function
 function wrapText(text, fontSize, maxWidth) {
- const approxCharWidth = fontSize * 0.7; // rough width per character
- const maxCharsPerLine = Math.floor(maxWidth / approxCharWidth);
- const words = text.split(" ");
- const lines = [];
- let currentLine = "";
+  const approxCharWidth = fontSize * 0.7;
+  const maxCharsPerLine = Math.floor(maxWidth / approxCharWidth);
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = "";
 
- words.forEach((word) => {
-   if (
-     (currentLine + (currentLine ? " " : "") + word).length <= maxCharsPerLine
-   ) {
-     currentLine += (currentLine ? " " : "") + word;
-   } else {
-     if (currentLine) lines.push(currentLine);
-     currentLine = word;
-   }
- });
+  words.forEach((word) => {
+    if (
+      (currentLine + (currentLine ? " " : "") + word).length <= maxCharsPerLine
+    ) {
+      currentLine += (currentLine ? " " : "") + word;
+    } else {
+      if (currentLine) lines.push(currentLine);
+      currentLine = word;
+    }
+  });
 
- if (currentLine) lines.push(currentLine);
- return lines;
+  if (currentLine) lines.push(currentLine);
+  return lines;
 }
 
 export function generateMarkdownPage(centerX, centerY, markdownText) {
-  // 🛑 FIX: Ensure markdownText is a string before calling .split()
-  if (typeof markdownText !== 'string') {
-      console.warn("generateMarkdownPage received non-string content. Defaulting to empty string.");
-      markdownText = "";
+  // --- Get current boardId from localStorage ---
+  let boardId = null;
+  try {
+    const tenshinRaw = localStorage.getItem(STORAGE_KEY);
+    if (tenshinRaw) {
+      const parsed = JSON.parse(tenshinRaw);
+      // Choose first board as current if no explicit selection
+      boardId = Object.keys(parsed.boards || {})[0] || null;
+    }
+  } catch (e) {
+    console.error("Failed to read boardId from storage", e);
   }
 
-  // 🆕 TWEAK: Replace literal '\n' (backslash-n) with an actual newline character.
-  markdownText = markdownText.replace(/\\n/g, '\n');
+  if (!boardId) {
+    console.warn(
+      "generateMarkdownPage: no boardId found, cannot save markdown"
+    );
+  }
+
+  // Ensure markdownText is string
+  if (typeof markdownText !== "string") {
+    console.warn(
+      "generateMarkdownPage received non-string content. Defaulting to empty string."
+    );
+    markdownText = "";
+  }
+
+  const markdownTextRaw = markdownText;
+
+  markdownText = markdownText.replace(/\\n/g, "\n");
 
   const groupId = generateGroupId();
   const pageWidth = 650;
   const padding = 40;
   const lineSpacing = 10;
-  const rightExtra = 20;
 
-  // ✅ Add minor rounding and jitter to avoid subpixel cutoff
-  const jitterX = (Math.random() - 0.5) * 2; // ±1px
+  const jitterX = (Math.random() - 0.5) * 2;
   const jitterY = (Math.random() - 0.5) * 2;
   const safeCenterX = Math.round((centerX + jitterX) * 100) / 100;
   const safeCenterY = Math.round((centerY + jitterY) * 100) / 100;
 
   let contentHeight = padding;
   const elements = [];
-  // Line 44: This is now safe and will split on both original newlines and the new ones from the '\n' replacement
-  const lines = markdownText.split("\n");
-  const processedLines = [];
 
-  // ✅ Dummy invisible preload text (helps font render on first draw)
   elements.push({
     type: "text",
     x: safeCenterX,
@@ -71,10 +89,12 @@ export function generateMarkdownPage(centerX, centerY, markdownText) {
     strokeWidth: 0,
     roughness: 0,
     opacity: 0,
-    groupIds: [],
+    groupIds: [groupId],
   });
 
-  // Process lines
+  const lines = markdownText.split("\n");
+  const processedLines = [];
+
   lines.forEach((line) => {
     line = line.trim();
     if (!line) {
@@ -90,7 +110,7 @@ export function generateMarkdownPage(centerX, centerY, markdownText) {
     if (line.startsWith("# ")) {
       fontSize = 36;
       line = line.replace(/^# /, "");
-    } else if (line.startsWith(">> ")) { // New condition: '>> ' for isMem
+    } else if (line.startsWith(">> ")) {
       fontSize = 20;
       line = line.replace(/^>> /, "");
       isMem = true;
@@ -114,13 +134,12 @@ export function generateMarkdownPage(centerX, centerY, markdownText) {
     });
     contentHeight += wrappedLines.length * (fontSize + lineSpacing);
 
-    if (fontSize === 36) contentHeight += 10; // extra spacing for headers
+    if (fontSize === 36) contentHeight += 10;
   });
 
   const pageHeight = contentHeight + padding;
   const topY = safeCenterY - pageHeight / 2;
 
-  // Rectangle background
   const pageRect = {
     type: "rectangle",
     x: safeCenterX - pageWidth / 2,
@@ -134,7 +153,6 @@ export function generateMarkdownPage(centerX, centerY, markdownText) {
     opacity: 100,
     groupIds: [groupId],
   };
-
   elements.push(pageRect);
 
   let currentY = topY + padding;
@@ -158,25 +176,21 @@ export function generateMarkdownPage(centerX, centerY, markdownText) {
       currentY += 20;
     } else if (item.type === "text") {
       const strokeColor = item.isMem
-    ? "#ff8383" // New stroke color when isMem is TRUE (e.g., a shade of blue)
-    : item.isQuote
-    ? "#555555" // Original stroke color when isQuote is TRUE
-    : "#000000"; // Default stroke color (when neither isMem nor isQuote is TRUE)
-
-const backgroundColor = item.isMem
-    ? "#f0f0f0" // New background color when isMem is TRUE (e.g., light blue)
-    : item.isQuote
-    ? "#f0f0f0" // Original background color when isQuote is TRUE
-    : "transparent"; // Default background color
+        ? "#ff8383"
+        : item.isQuote
+        ? "#555555"
+        : "#000000";
+      const backgroundColor =
+        item.isMem || item.isQuote ? "#f0f0f0" : "transparent";
 
       item.lines.forEach((lineText) => {
         elements.push({
           type: "text",
-          x: safeCenterX - (pageWidth - 2 * padding) / 2 ,
+          x: safeCenterX - (pageWidth - 2 * padding) / 2,
           y: currentY,
           text: lineText,
           fontSize: item.fontSize,
-          width: pageWidth - 2, // keep wide enough for wrapping
+          width: pageWidth - 2,
           height: item.fontSize + 8,
           fontFamily: 1,
           textAlign: "left",
@@ -194,6 +208,34 @@ const backgroundColor = item.isMem
       if (item.fontSize === 36) currentY += 10;
     }
   });
+
+  // --- SAVE TO boardsData ---
+  if (boardId) {
+    try {
+      const boardDataRaw = localStorage.getItem(BOARD_DATA_KEY);
+      const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};
+      const oldBoard = boardsData[boardId] || {};
+
+      boardsData[boardId] = {
+        ...oldBoard,
+        elements: oldBoard.elements || [],
+        files: oldBoard.files || {},
+        appState: oldBoard.appState || {},
+        markdown_registry: {
+          ...(oldBoard.markdown_registry || {}),
+          [groupId]: {
+            id: groupId,
+            text: markdownTextRaw,
+          },
+        },
+      };
+
+      localStorage.setItem(BOARD_DATA_KEY, JSON.stringify(boardsData));
+      console.log(`Markdown saved to board ${boardId}`, groupId);
+    } catch (e) {
+      console.error("Failed to save markdown to registry", e);
+    }
+  }
 
   return elements;
 }
