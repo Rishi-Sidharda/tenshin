@@ -14,11 +14,11 @@ export default function RecentBoards({
   ICONS,
 }) {
   return (
-    <section className="mb-10 font-outfit">
+    <section className="mb-5 font-outfit">
       <h3 className="text-lg font-medium mt-20 mb-4">Recent Boards</h3>
-      <div className="flex flex-wrap gap-4 py-4 justify-start">
+      <div className="flex flex-wrap gap-3 py-4 justify-start">
         {recentBoards.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-gray-500 h-36 rounded-lg w-full bg-[#1a1a1a]">
+          <div className="flex flex-col items-center justify-center text-gray-500 h-36 rounded-md w-full bg-[#1a1a1a]">
             <p className="text-sm font-light">
               No boards yet. Create your first one!
             </p>
@@ -31,7 +31,7 @@ export default function RecentBoards({
             return (
               <div
                 key={board.id}
-                className="board-card-container w-36 h-36 bg-[#202020] hover:bg-[#2a2a2a] rounded-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
+                className="board-card-container w-32 h-32 bg-[#202020] hover:bg-[#2a2a2a] rounded-lg flex flex-col justify-between transition-transform transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
                 onClick={() => openBoard(board.id)}
                 onContextMenu={(e) => {
                   e.preventDefault();
@@ -39,23 +39,23 @@ export default function RecentBoards({
                 }}
               >
                 <div
-                  className="h-3 w-full rounded-t-lg"
+                  className="h-2.5 w-full rounded-t-lg"
                   style={{ backgroundColor: folder ? folder.color : "#6b7280" }}
                 ></div>
 
-                <div className="p-3 flex flex-col gap-5 h-full">
+                <div className="p-2.5 flex flex-col gap-3 h-full">
                   <div className="flex items-center justify-between">
                     <div
-                      className="p-1 rounded hover:bg-[#3a3a3a] transition-transform hover:scale-110"
+                      className="p-1 rounded-lg hover:bg-[#3a3a3a] transition-transform hover:scale-110"
                       onClick={(e) => {
                         e.stopPropagation();
                         startEditingIcon(board.id);
                       }}
                     >
-                      <Icon className="w-6 h-6 text-white" />
+                      <Icon className="w-5 h-5 text-white" />
                     </div>
                     <span
-                      className="text-white p-1 rounded hover:bg-[#3a3a3a]"
+                      className="text-white p-1 rounded-lg hover:bg-[#3a3a3a]"
                       onClick={(e) => handleBoardMenuClick(e, board.id)}
                     >
                       <Ellipsis />

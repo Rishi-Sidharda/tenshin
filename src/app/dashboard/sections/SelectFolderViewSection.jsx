@@ -178,7 +178,7 @@ export default function SelectFolderViewSection({
 
                   {/* Icon */}
                   <div
-                    className="p-1.5 rounded-sm hover:bg-[#3a3a3a] transition"
+                    className="p-1.5 rounded-lg hover:bg-[#3a3a3a] transition"
                     onClick={(e) => {
                       e.stopPropagation();
                       startEditingIcon(board.id);
@@ -197,7 +197,7 @@ export default function SelectFolderViewSection({
 
                   {/* Menu button */}
                   <span
-                    className="text-white p-1.5 rounded-sm hover:bg-[#3a3a3a]"
+                    className="text-white p-1.5 rounded-lg hover:bg-[#3a3a3a]"
                     onClick={(e) => handleBoardMenuClick(e, board.id)}
                   >
                     <Ellipsis className="w-4 h-4" />
@@ -232,7 +232,7 @@ export default function SelectFolderViewSection({
 
                     {/* Icon */}
                     <div
-                      className="p-1.5 rounded-sm hover:bg-[#3a3a3a] transition"
+                      className="p-1.5 rounded-lg hover:bg-[#3a3a3a] transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         startEditingIcon(board.id);
@@ -251,7 +251,7 @@ export default function SelectFolderViewSection({
 
                     {/* Menu button */}
                     <span
-                      className="text-white p-1.5 rounded-sm hover:bg-[#3a3a3a]"
+                      className="text-white p-1.5 rounded-lg hover:bg-[#3a3a3a]"
                       onClick={(e) => handleBoardMenuClick(e, board.id)}
                     >
                       <Ellipsis className="w-4 h-4" />
@@ -289,7 +289,7 @@ export default function SelectFolderViewSection({
 
                     {/* Icon */}
                     <div
-                      className="p-1.5 rounded-sm hover:bg-[#3a3a3a] transition"
+                      className="p-1.5 rounded-lg hover:bg-[#3a3a3a] transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         startEditingIcon(board.id);
@@ -308,7 +308,7 @@ export default function SelectFolderViewSection({
 
                     {/* Menu button */}
                     <span
-                      className="text-white p-1.5 rounded-sm hover:bg-[#3a3a3a]"
+                      className="text-white p-1.5 rounded-lg hover:bg-[#3a3a3a]"
                       onClick={(e) => handleBoardMenuClick(e, board.id)}
                     >
                       <Ellipsis className="w-4 h-4" />
