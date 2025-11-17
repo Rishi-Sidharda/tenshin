@@ -39,37 +39,9 @@ export const drawExcalidrawElements = async (component, markdown) => {
 
   // ⚙️ If markdown — do two-phase rendering
   if (component === "markdown") {
-    // Step 1️⃣: Add a fake text element to prime the renderer
-    const fakeText = convertToExcalidrawElements([
-      {
-        type: "text",
-        x: 100,
-        y: 100,
-        text: "Priming text...",
-        fontSize: 10,
-        width: 100,
-        height: 20,
-        fontFamily: 1,
-        textAlign: "left",
-        verticalAlign: "top",
-        strokeColor: "transparent",
-        backgroundColor: "transparent",
-        strokeWidth: 1,
-        roughness: 0,
-        opacity: 50,
-      },
-    ]);
-
-    excalidrawApi.updateScene({
-      elements: [...currentElements, ...fakeText],
-    });
-
-    // Wait briefly to ensure the renderer updates
-    await new Promise((resolve) => setTimeout(resolve, 150));
-
     const markdownText = `${markdown}`;
 
-    // Step 2️⃣: Now add the real markdown
+    // Step 1: Now add the real markdown
     const markdownElements = convertToExcalidrawElements(
       generateElements({ component, appState, markdownText })
     );
@@ -77,13 +49,12 @@ export const drawExcalidrawElements = async (component, markdown) => {
     // Remove fake text element by filtering it out
     const sceneWithoutFake = excalidrawApi
       .getSceneElements()
-      .filter((el) => el.text !== "Priming text...");
+      .filter((el) => el.text !== "gibbera;dflasdjfpaupaiwerhadsdgjasdf");
 
     excalidrawApi.updateScene({
       elements: [...sceneWithoutFake, ...markdownElements],
     });
 
-    console.log("✅ Markdown rendered after priming");
     return;
   }
 
@@ -96,5 +67,4 @@ export const drawExcalidrawElements = async (component, markdown) => {
     elements: [...currentElements, ...newElements],
   });
 
-  console.log(`✅ Added "${component}"`);
 };

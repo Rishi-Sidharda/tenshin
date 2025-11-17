@@ -73,25 +73,6 @@ export function generateMarkdownPage(centerX, centerY, markdownText) {
   let contentHeight = padding;
   const elements = [];
 
-  elements.push({
-    type: "text",
-    x: safeCenterX,
-    y: safeCenterY,
-    text: " ",
-    fontSize: 1,
-    width: 1,
-    height: 1,
-    fontFamily: 1,
-    textAlign: "left",
-    verticalAlign: "top",
-    strokeColor: "transparent",
-    backgroundColor: "transparent",
-    strokeWidth: 0,
-    roughness: 0,
-    opacity: 0,
-    groupIds: [groupId],
-  });
-
   const lines = markdownText.split("\n");
   const processedLines = [];
 

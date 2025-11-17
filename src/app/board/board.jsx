@@ -59,9 +59,16 @@ export default function Board() {
     // Get selected elements
     const selectedElements = elements.filter((el) => selectedElementIds[el.id]);
 
+    // Load board data from localStorage
+    const boardDataRaw = localStorage.getItem(BOARD_DATA_KEY);
+    const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};
+    const markdownRegistry = boardsData[boardId]?.markdown_registry || {};
+
     // Find first markdown element among selection
     const markdownElement = selectedElements.find((el) =>
-      el.groupIds?.some((id) => id.startsWith("markdown-"))
+      el.groupIds?.some(
+        (id) => id.startsWith("markdown-") && markdownRegistry[id]
+      )
     );
 
     if (markdownElement) {
@@ -178,24 +185,30 @@ export default function Board() {
 
   const handleEditMarkdown = () => {
     setIsEditingMarkdown(true);
-
-    const rect = api
-      ?.getSceneElements()
-      ?.find(
-        (el) =>
-          el.type === "rectangle" &&
-          el.groupIds?.includes(selectedMarkdownGroupId)
-      );
-
-    if (rect) {
-      setMarkdownPosition({ x: rect.x, y: rect.y });
-      console.log(selectedMarkdownText);
-    } else {
-      console.log("Markdown rectangle NOT FOUND");
-    }
   };
 
-  // ✅ Manual Save Button handler
+  function hashValue(value) {
+    let str = "";
+    try {
+      str = JSON.stringify(value);
+    } catch {
+      return Math.random().toString(); // fallback
+    }
+
+    let hash = BigInt("0xcbf29ce484222325");
+    const prime = BigInt("0x100000001b3");
+
+    for (let i = 0; i < str.length; i++) {
+      hash ^= BigInt(str.charCodeAt(i));
+      hash *= prime;
+    }
+
+    return hash.toString(16); // return hex string
+  }
+
+  // -------------------------------------------
+  // MAIN SAVE HANDLER (OPTIMIZED)
+  // -------------------------------------------
   const handleSave = () => {
     if (!api || !boardId) return;
     setIsSaving(true);
@@ -215,30 +228,68 @@ export default function Board() {
     const tenshin = tenshinRaw
       ? JSON.parse(tenshinRaw)
       : { boards: {}, folders: {}, ui: { collapsedFolders: {} } };
+
     const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};
 
     const oldContent = boardsData[boardId] || {};
 
-    // Read markdown registry from some state or default
-    // Replace this with your actual markdown state if needed
     const markdownRegistryState = oldContent.markdown_registry || {};
 
-    // Update board data
-    boardsData[boardId] = {
-      elements,
-      appState: safeAppState,
-      files,
-      markdown_registry: { ...markdownRegistryState },
+    // -------------------------------------------
+    // Calculate hashes
+    // -------------------------------------------
+    const oldHashes = {
+      elements: oldContent.elements_hash,
+      files: oldContent.files_hash,
+      appState: oldContent.appState_hash,
+      markdown: oldContent.markdown_hash,
     };
 
-    // Check if anything changed
-    const hasChanged =
-      JSON.stringify(oldContent.elements) !== JSON.stringify(elements) ||
-      JSON.stringify(oldContent.files) !== JSON.stringify(files) ||
-      JSON.stringify(oldContent.markdown_registry) !==
-        JSON.stringify(boardsData[boardId].markdown_registry);
+    const newHashes = {
+      elements: hashValue(elements),
+      files: hashValue(files),
+      appState: hashValue(safeAppState),
+      markdown: hashValue(markdownRegistryState),
+    };
 
-    if (hasChanged) {
+    // -------------------------------------------
+    // Incrementally update ONLY changed fields
+    // -------------------------------------------
+    const updatedBoard = { ...oldContent };
+
+    if (oldHashes.elements !== newHashes.elements) {
+      updatedBoard.elements = elements;
+      updatedBoard.elements_hash = newHashes.elements;
+    }
+
+    if (oldHashes.files !== newHashes.files) {
+      updatedBoard.files = files;
+      updatedBoard.files_hash = newHashes.files;
+    }
+
+    if (oldHashes.appState !== newHashes.appState) {
+      updatedBoard.appState = safeAppState;
+      updatedBoard.appState_hash = newHashes.appState;
+    }
+
+    if (oldHashes.markdown !== newHashes.markdown) {
+      updatedBoard.markdown_registry = { ...markdownRegistryState };
+      updatedBoard.markdown_hash = newHashes.markdown;
+    }
+
+    // Save back the changed board
+    boardsData[boardId] = updatedBoard;
+
+    // -------------------------------------------
+    // Update metadata IF something changed
+    // -------------------------------------------
+    const somethingChanged =
+      oldHashes.elements !== newHashes.elements ||
+      oldHashes.files !== newHashes.files ||
+      oldHashes.markdown !== newHashes.markdown ||
+      oldHashes.appState !== newHashes.appState;
+
+    if (somethingChanged) {
       if (!tenshin.boards[boardId]) {
         tenshin.boards[boardId] = {
           id: boardId,
@@ -249,7 +300,7 @@ export default function Board() {
       tenshin.boards[boardId].updatedAt = new Date().toISOString();
     }
 
-    // Save back
+    // Save to storage
     localStorage.setItem(BOARD_DATA_KEY, JSON.stringify(boardsData));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tenshin));
 
