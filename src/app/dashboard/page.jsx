@@ -3,8 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import {
   Brush,
   PenTool,
@@ -189,14 +188,33 @@ export default function DashboardPage() {
     }
   }
 
-  function saveToStorage({ folders, boards, ui, boardsData }) {
+  function saveToStorage({ folders, boards, ui }) {
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ folders, boards, ui })
-      );
-      localStorage.setItem(BOARD_DATA_KEY, JSON.stringify(boardsData));
-      setData({ folders, boards, ui, boardsData });
+      const STORAGE_KEY = "tenshin";
+
+      // Load existing tenshin data to preserve anything not included in the update
+      const existing = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+        boards: {},
+        folders: {},
+        ui: { collapsedFolders: {} },
+      };
+
+      const merged = {
+        folders: folders ?? existing.folders,
+        boards: boards ?? existing.boards,
+        ui: ui ?? existing.ui,
+      };
+
+      // Write only the tenshin metadata (NO boardData here)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+
+      // Update app state
+      setData({
+        folders: merged.folders,
+        boards: merged.boards,
+        ui: merged.ui,
+        boardsData: undefined, // leave untouched
+      });
     } catch (e) {
       console.error("saveToStorage error", e);
     }

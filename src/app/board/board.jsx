@@ -186,75 +186,79 @@ export default function Board() {
     setIsEditingMarkdown(true);
   };
 
-  function hashValue(value) {
-    let str = "";
-    try {
-      str = JSON.stringify(value);
-    } catch {
-      return Math.random().toString(); // fallback
-    }
-
-    let hash = BigInt("0xcbf29ce484222325");
-    const prime = BigInt("0x100000001b3");
-
-    for (let i = 0; i < str.length; i++) {
-      hash ^= BigInt(str.charCodeAt(i));
-      hash *= prime;
-    }
-
-    return hash.toString(16); // return hex string
-  }
-
-  // -------------------------------------------
-  // MAIN SAVE HANDLER (OPTIMIZED)
-  // -------------------------------------------
+  // =======================================================
+  //  HIGH-PERFORMANCE SAVE HANDLER (Drop-in replacement)
+  // =======================================================
   const handleSave = () => {
     if (!api || !boardId) return;
     setIsSaving(true);
 
-    const elements = api.getSceneElements();
-    const appState = api.getAppState();
-    const files = api.getFiles();
-    const safeAppState = { ...appState, collaborators: {} };
-
     const STORAGE_KEY = "tenshin";
     const BOARD_DATA_KEY = "boardData";
 
-    // Load existing data
-    const tenshinRaw = localStorage.getItem(STORAGE_KEY);
-    const boardDataRaw = localStorage.getItem(BOARD_DATA_KEY);
+    // ---------------------------------------------------
+    // 1) GET SCENE STATE (CHEAPEST POSSIBLE EXTRACTION)
+    // ---------------------------------------------------
+    const elements = api.getSceneElements();
+    const files = api.getFiles();
 
-    const tenshin = tenshinRaw
-      ? JSON.parse(tenshinRaw)
-      : { boards: {}, folders: {}, ui: { collapsedFolders: {} } };
-
-    const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};
-
-    const oldContent = boardsData[boardId] || {};
-
-    const markdownRegistryState = oldContent.markdown_registry || {};
-
-    // -------------------------------------------
-    // Calculate hashes
-    // -------------------------------------------
-    const oldHashes = {
-      elements: oldContent.elements_hash,
-      files: oldContent.files_hash,
-      appState: oldContent.appState_hash,
-      markdown: oldContent.markdown_hash,
+    // Strip unstable junk from appState to avoid false updates
+    const rawAppState = api.getAppState();
+    const safeAppState = {
+      theme: rawAppState.theme,
+      gridSize: rawAppState.gridSize,
+      zoom: rawAppState.zoom?.value,
+      viewBackgroundColor: rawAppState.viewBackgroundColor,
+      name: rawAppState.name,
+      scrollX: Math.round(rawAppState.scrollX),
+      scrollY: Math.round(rawAppState.scrollY),
+      // any other stable fields you want to keep
     };
 
+    // ---------------------------------------------------
+    // 2) LOAD EXISTING STORED DATA
+    // ---------------------------------------------------
+    const tenshin = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+      boards: {},
+      folders: {},
+      ui: { collapsedFolders: {} },
+    };
+
+    const boardsData = JSON.parse(localStorage.getItem(BOARD_DATA_KEY)) || {};
+
+    const oldBoard = boardsData[boardId] || {};
+
+    const oldRegistry = oldBoard.markdown_registry || {};
+
+    // ---------------------------------------------------
+    // 3) SUPER-FAST HASHING (only summaries)
+    // ---------------------------------------------------
     const newHashes = {
-      elements: hashValue(elements),
-      files: hashValue(files),
-      appState: hashValue(safeAppState),
-      markdown: hashValue(markdownRegistryState),
+      elements:
+        elements.length + ":" + (elements[elements.length - 1]?.version ?? 0),
+      files: Object.keys(files).length,
+      appState:
+        safeAppState.scrollX +
+        "-" +
+        safeAppState.scrollY +
+        "-" +
+        safeAppState.theme +
+        "-" +
+        safeAppState.viewBackgroundColor,
+      markdown: Object.keys(oldRegistry).length,
     };
 
-    // -------------------------------------------
-    // Incrementally update ONLY changed fields
-    // -------------------------------------------
-    const updatedBoard = { ...oldContent };
+    const oldHashes = {
+      elements: oldBoard.elements_hash,
+      files: oldBoard.files_hash,
+      appState: oldBoard.appState_hash,
+      markdown: oldBoard.markdown_hash,
+    };
+
+    // ---------------------------------------------------
+    // 4) INCREMENTAL UPDATE (only changed data is written)
+    // ---------------------------------------------------
+    const updatedBoard = { ...oldBoard };
 
     if (oldHashes.elements !== newHashes.elements) {
       updatedBoard.elements = elements;
@@ -272,21 +276,20 @@ export default function Board() {
     }
 
     if (oldHashes.markdown !== newHashes.markdown) {
-      updatedBoard.markdown_registry = { ...markdownRegistryState };
+      updatedBoard.markdown_registry = { ...oldRegistry };
       updatedBoard.markdown_hash = newHashes.markdown;
     }
 
-    // Save back the changed board
     boardsData[boardId] = updatedBoard;
 
-    // -------------------------------------------
-    // Update metadata IF something changed
-    // -------------------------------------------
+    // ---------------------------------------------------
+    // 5) METADATA UPDATE (only if something actually changed)
+    // ---------------------------------------------------
     const somethingChanged =
       oldHashes.elements !== newHashes.elements ||
       oldHashes.files !== newHashes.files ||
-      oldHashes.markdown !== newHashes.markdown ||
-      oldHashes.appState !== newHashes.appState;
+      oldHashes.appState !== newHashes.appState ||
+      oldHashes.markdown !== newHashes.markdown;
 
     if (somethingChanged) {
       if (!tenshin.boards[boardId]) {
@@ -299,11 +302,13 @@ export default function Board() {
       tenshin.boards[boardId].updatedAt = new Date().toISOString();
     }
 
-    // Save to storage
+    // ---------------------------------------------------
+    // 6) SAVE TO LOCALSTORAGE (only two writes)
+    // ---------------------------------------------------
     localStorage.setItem(BOARD_DATA_KEY, JSON.stringify(boardsData));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tenshin));
 
-    setTimeout(() => setIsSaving(false), 800);
+    setTimeout(() => setIsSaving(false), 300);
   };
 
   return (

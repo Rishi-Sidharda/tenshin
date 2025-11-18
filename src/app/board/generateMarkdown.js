@@ -3,6 +3,8 @@
 const STORAGE_KEY = "tenshin";
 const BOARD_DATA_KEY = "boardData";
 
+import { useSearchParams } from "next/navigation";
+
 // --- Configuration is now handled via function arguments, but we keep
 // the line spacing constant locally as it's a structural element.
 const LINE_SPACING = 10;
@@ -67,16 +69,8 @@ export function generateMarkdownPage(
   charFactor = 0.6
 ) {
   // --- Get current boardId from localStorage (unchanged) ---
-  let boardId = null;
-  try {
-    const tenshinRaw = localStorage.getItem(STORAGE_KEY);
-    if (tenshinRaw) {
-      const parsed = JSON.parse(tenshinRaw);
-      boardId = Object.keys(parsed.boards || {})[0] || null;
-    }
-  } catch (e) {
-    console.error("Failed to read boardId from storage", e);
-  }
+  const params = new URLSearchParams(window.location.search);
+  const boardId = params.get("id");
 
   if (!boardId) {
     console.warn(
@@ -252,25 +246,42 @@ export function generateMarkdownPage(
   // --- SAVE TO boardsData (unchanged) ---
   if (boardId) {
     try {
+      const BOARD_DATA_KEY = "boardData";
+
+      // Load all boards
       const boardDataRaw = localStorage.getItem(BOARD_DATA_KEY);
       const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};
+
+      // Ensure board exists
       const oldBoard = boardsData[boardId] || {};
 
-      boardsData[boardId] = {
+      // Preserve all existing sections exactly as handleSave() expects
+      const newRegistry = {
+        ...(oldBoard.markdown_registry || {}),
+        [groupId]: {
+          id: groupId,
+          text: markdownTextRaw,
+        },
+      };
+
+      const updatedBoard = {
         ...oldBoard,
         elements: oldBoard.elements || [],
         files: oldBoard.files || {},
         appState: oldBoard.appState || {},
-        markdown_registry: {
-          ...(oldBoard.markdown_registry || {}),
-          [groupId]: {
-            id: groupId,
-            text: markdownTextRaw,
-          },
-        },
+        markdown_registry: newRegistry,
+
+        // keep hashes untouched — handleSave() recalculates them
+        elements_hash: oldBoard.elements_hash,
+        files_hash: oldBoard.files_hash,
+        appState_hash: oldBoard.appState_hash,
+        markdown_hash: oldBoard.markdown_hash,
       };
 
+      boardsData[boardId] = updatedBoard;
+
       localStorage.setItem(BOARD_DATA_KEY, JSON.stringify(boardsData));
+
       console.log(`Markdown saved to board ${boardId}`, groupId);
     } catch (e) {
       console.error("Failed to save markdown to registry", e);
