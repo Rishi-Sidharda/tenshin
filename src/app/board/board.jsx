@@ -181,10 +181,6 @@ export default function Board() {
     setShowMarkdownButton(false);
   };
 
-  const handleEditMarkdown = () => {
-    setIsEditingMarkdown(true);
-  };
-
   const handleSave = () => {
     if (!api || !boardId) return;
     setIsSaving(true);
@@ -287,6 +283,10 @@ export default function Board() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tenshin));
 
     setTimeout(() => setIsSaving(false), 300);
+  };
+
+  const handleEditMarkdown = () => {
+    setIsEditingMarkdown(true);
   };
 
   return (

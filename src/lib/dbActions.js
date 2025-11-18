@@ -1,6 +1,3 @@
-// dbactions.js
-// Utility functions for interacting with Supabase and updating the user's plan.
-
 import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client

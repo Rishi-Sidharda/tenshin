@@ -27,7 +27,6 @@ import IconPickerModal from "./modals/IconPickerModal";
 import CreateFolderModal from "./modals/CreateFolderModal";
 import EditFolderModal from "./modals/EditFolderModal";
 import DeleteFolderModal from "./modals/DeleteFolderModal";
-import { loadFromStorage } from "@/lib/localstorage";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -104,6 +103,88 @@ export default function DashboardPage() {
     "#a3a3a3",
   ];
 
+  const STORAGE_KEY = "tenshin";
+  const BOARD_DATA_KEY = "boardData";
+
+  function loadFromStorage() {
+    try {
+      const tenshinRaw = localStorage.getItem(STORAGE_KEY);
+      const boardsDataRaw = localStorage.getItem(BOARD_DATA_KEY);
+      const boardsData = boardsDataRaw ? JSON.parse(boardsDataRaw) : {};
+
+      if (tenshinRaw) {
+        const parsed = JSON.parse(tenshinRaw);
+        const folders = parsed.folders || {};
+        const boards = parsed.boards || {};
+        const ui = parsed.ui || { collapsedFolders: {} };
+
+        // ensure folders have arrays + expanded default
+        Object.keys(folders).forEach((fid) => {
+          if (!Array.isArray(folders[fid].boards)) folders[fid].boards = [];
+          if (folders[fid].expanded === undefined) folders[fid].expanded = true;
+        });
+
+        return { folders, boards, ui, boardsData };
+      }
+
+      // migrate from old "boards" key if present
+      const oldRaw = localStorage.getItem("boards");
+      if (oldRaw) {
+        const oldParsed = JSON.parse(oldRaw);
+        const boards = {};
+        const newBoardsData = {};
+
+        Object.keys(oldParsed).forEach((id) => {
+          const board = oldParsed[id];
+          boards[id] = {
+            id,
+            name: board.name || "Untitled Board",
+            icon: board.icon || "Brush",
+            folderId: board.folderId || null,
+            isFavorite: board.isFavorite || false,
+            updatedAt: board.updatedAt || new Date().toISOString(),
+          };
+          newBoardsData[id] = {
+            elements: board.elements || [],
+            appState: board.appState || {},
+            files: board.files || {},
+          };
+        });
+
+        const newTop = { folders: {}, boards, ui: { collapsedFolders: {} } };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newTop));
+        localStorage.setItem(BOARD_DATA_KEY, JSON.stringify(newBoardsData));
+
+        try {
+          localStorage.removeItem("boards");
+        } catch (e) {}
+
+        return {
+          folders: {},
+          boards,
+          ui: { collapsedFolders: {} },
+          boardsData: newBoardsData,
+        };
+      }
+
+      // nothing found
+      return {
+        folders: {},
+        boards: {},
+        ui: { collapsedFolders: {} },
+        boardsData: {},
+      };
+    } catch (e) {
+      console.error("loadFromStorage error", e);
+      return {
+        folders: {},
+        boards: {},
+        ui: { collapsedFolders: {} },
+        boardsData: {},
+      };
+    }
+  }
+
   function saveToStorage({ folders, boards, ui }) {
     try {
       const STORAGE_KEY = "tenshin";
@@ -136,30 +217,6 @@ export default function DashboardPage() {
     }
   }
 
-  // ----------------------- INITIAL LOAD & AUTH -----------------------
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const { data } = await supabase.auth.getUser();
-        const currentUser = data?.user || null;
-        setUser(currentUser);
-        if (!currentUser) window.location.href = "/signin";
-      } catch (e) {
-        console.error("supabase getUser failed", e);
-      }
-    };
-    getUser();
-  }, []);
-
-  useEffect(() => {
-    const loaded = loadFromStorage();
-    setData(loaded);
-    if (!loaded.ui) {
-      const newData = { ...loaded, ui: { collapsedFolders: {} } };
-      saveToStorage(newData);
-    }
-  }, []);
-
   // ----------------------- DERIVED LISTS -----------------------
   const allBoardsArray = Object.keys(data.boards || {}).map((id) => ({
     id,
@@ -176,30 +233,7 @@ export default function DashboardPage() {
 
   const noFolderBoards = sortedBoards.filter((b) => !b.folderId);
 
-  // ----------------------- HELPERS -----------------------
-  function timeAgo(dateString) {
-    if (!dateString) return "just now";
-    const date = new Date(dateString);
-    const now = new Date();
-    const seconds = Math.floor((now - date) / 1000);
-    const intervals = [
-      { label: "year", seconds: 31536000 },
-      { label: "month", seconds: 2592000 },
-      { label: "week", seconds: 604800 },
-      { label: "day", seconds: 86400 },
-      { label: "hour", seconds: 3600 },
-      { label: "min", seconds: 60 },
-      { label: "sec", seconds: 1 },
-    ];
-    for (const interval of intervals) {
-      const count = Math.floor(seconds / interval.seconds);
-      if (count >= 1)
-        return `${count} ${interval.label}${count !== 1 ? "s" : ""} ago`;
-    }
-    return "just now";
-  }
-
-  // ----------------------- BOARD CRUD -----------------------
+  // -----------------------------------------------------------------------------
   const createNewBoard = () => {
     const id = crypto.randomUUID();
     const assignedFolderId = selectedFolderId || null;
@@ -442,6 +476,55 @@ export default function DashboardPage() {
     setDeleteFolderConfirm({ open: false, folderId: null });
     if (selectedFolderId === id) setSelectedFolderId(null);
   };
+
+  // --------------------------------------------------------------------------------------------------
+
+  // ----------------------- INITIAL LOAD & AUTH -----------------------
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        const currentUser = data?.user || null;
+        setUser(currentUser);
+        if (!currentUser) window.location.href = "/signin";
+      } catch (e) {
+        console.error("supabase getUser failed", e);
+      }
+    };
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    const loaded = loadFromStorage();
+    setData(loaded);
+    if (!loaded.ui) {
+      const newData = { ...loaded, ui: { collapsedFolders: {} } };
+      saveToStorage(newData);
+    }
+  }, []);
+
+  // ----------------------- HELPERS -----------------------
+  function timeAgo(dateString) {
+    if (!dateString) return "just now";
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    const intervals = [
+      { label: "year", seconds: 31536000 },
+      { label: "month", seconds: 2592000 },
+      { label: "week", seconds: 604800 },
+      { label: "day", seconds: 86400 },
+      { label: "hour", seconds: 3600 },
+      { label: "min", seconds: 60 },
+      { label: "sec", seconds: 1 },
+    ];
+    for (const interval of intervals) {
+      const count = Math.floor(seconds / interval.seconds);
+      if (count >= 1)
+        return `${count} ${interval.label}${count !== 1 ? "s" : ""} ago`;
+    }
+    return "just now";
+  }
 
   const toggleFolderCollapse = (folderId) => {
     const newUi = {
