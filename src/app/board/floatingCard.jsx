@@ -10,7 +10,7 @@ const ALLOWED_BLOCKS = [
   { label: "Divider", symbol: "---", shortcut: "Ctrl+D" },
 ];
 
-export default function FloatingCard({ onClose, onSave }) {
+export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
   const containerRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -171,7 +171,7 @@ export default function FloatingCard({ onClose, onSave }) {
     const ta = textareaRef.current;
     const current = ta ? ta.value : markdownContent;
     const sanitized = sanitizeMarkdown(current);
-    drawExcalidrawElements("markdown", sanitized);
+    drawExcalidrawElements("markdown", sanitized, BOARD_DATA_KEY);
     onSave?.(sanitized);
     onClose?.();
   };

@@ -86,6 +86,7 @@ export default function FloatingEditMarkdownCard({
   onClose,
   markdownText,
   deleteMarkdown,
+  BOARD_DATA_KEY,
 }) {
   const containerRef = useRef(null);
   const textareaRef = useRef(null);
@@ -205,7 +206,7 @@ export default function FloatingEditMarkdownCard({
   const handleSave = () => {
     const sanitized = sanitizeMarkdown(markdownContent);
     deleteMarkdown();
-    drawExcalidrawElements("markdown", sanitized);
+    drawExcalidrawElements("markdown", sanitized, BOARD_DATA_KEY);
     onClose?.();
   };
 

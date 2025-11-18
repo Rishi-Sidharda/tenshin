@@ -72,12 +72,10 @@ export default function CommandPallet({ onClose, floatingCardAction }) {
   return (
     <div
       onClick={onClose}
-      className="fixed font-outfit inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[10]"
-    >
+      className="fixed font-outfit inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[10]">
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg rounded-sm bg-[#1A1A1A] shadow-[0_0_30px_rgba(0,0,0,0.6)] border border-[#2A2A2A] overflow-hidden"
-      >
+        className="w-full max-w-lg rounded-sm bg-[#1A1A1A] shadow-[0_0_30px_rgba(0,0,0,0.6)] border border-[#2A2A2A] overflow-hidden">
         {/* Search input */}
         <div className="border-b border-[#2A2A2A] px-4 py-3">
           <input
@@ -96,8 +94,7 @@ export default function CommandPallet({ onClose, floatingCardAction }) {
         {/* Command list */}
         <div
           ref={listRef}
-          className="max-h-64 overflow-y-auto py-1 custom-scroll scrollbar-hidden"
-        >
+          className="max-h-64 overflow-y-auto py-1 custom-scroll scrollbar-hidden">
           {filtered.length > 0 ? (
             filtered.map((cmd, i) => (
               <button
@@ -110,8 +107,7 @@ export default function CommandPallet({ onClose, floatingCardAction }) {
                   i === activeIndex
                     ? "bg-[#2F2B3A] text-[#E0E0E0]"
                     : "text-neutral-400 hover:bg-[#242424] hover:text-neutral-200"
-                }`}
-              >
+                }`}>
                 <span>{cmd.label}</span>
                 {i === activeIndex && (
                   <span className="text-md text-[#9b87f5]">↵</span>

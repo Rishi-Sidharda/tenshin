@@ -455,6 +455,7 @@ export default function Board() {
           <FloatingCard
             title="Custom Floating Card"
             onClose={() => setShowFloatingCard(false)}
+            BOARD_DATA_KEY={BOARD_DATA_KEY}
           />
         )}
         {isEditingMarkdown && (
@@ -462,6 +463,7 @@ export default function Board() {
             title="Custom Floating Card"
             onClose={() => setIsEditingMarkdown(false)}
             markdownText={selectedMarkdownText}
+            BOARD_DATA_KEY={BOARD_DATA_KEY}
             deleteMarkdown={() => {
               deleteMarkdown();
             }}

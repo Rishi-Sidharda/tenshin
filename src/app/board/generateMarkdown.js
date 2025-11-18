@@ -62,6 +62,7 @@ export function generateMarkdownPage(
   centerX,
   centerY,
   markdownText,
+  BOARD_DATA_KEY,
   // New Configurable Parameters with current defaults
   baseWidth = 650,
   paddingLeft = 40,
@@ -246,8 +247,6 @@ export function generateMarkdownPage(
   // --- SAVE TO boardsData (unchanged) ---
   if (boardId) {
     try {
-      const BOARD_DATA_KEY = "boardData";
-
       // Load all boards
       const boardDataRaw = localStorage.getItem(BOARD_DATA_KEY);
       const boardsData = boardDataRaw ? JSON.parse(boardDataRaw) : {};

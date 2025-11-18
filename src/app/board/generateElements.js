@@ -1,6 +1,11 @@
 import { generateMarkdownPage } from "./generateMarkdown";
 
-export function generateElements({ component, appState, markdownText }) {
+export function generateElements({
+  component,
+  appState,
+  markdownText,
+  BOARD_DATA_KEY,
+}) {
   const { scrollX, scrollY, zoom, width, height } = appState;
 
   const centerX = -scrollX + width / (2 * (zoom.value || zoom));
@@ -71,7 +76,12 @@ export function generateElements({ component, appState, markdownText }) {
       roughness: 1,
       opacity: 100,
     },
-    markdown: generateMarkdownPage(centerX, centerY, markdown_text), // grouped markdown
+    markdown: generateMarkdownPage(
+      centerX,
+      centerY,
+      markdown_text,
+      BOARD_DATA_KEY
+    ), // grouped markdown
   };
 
   const element = componentsMap[component] || componentsMap.rectangle;
