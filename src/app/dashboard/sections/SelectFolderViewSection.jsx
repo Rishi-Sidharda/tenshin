@@ -44,8 +44,7 @@ export default function SelectFolderViewSection({
       <div className="relative inline-block w-56" ref={dropdownRef}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="w-full bg-[#202020] hover:bg-[#2a2a2a] text-white cursor-pointer py-1 px-2 rounded-md flex justify-between items-center"
-        >
+          className="w-full bg-[#202020] hover:bg-[#2a2a2a] text-white cursor-pointer py-1 px-2 rounded-md flex justify-between items-center">
           <span className="truncate flex items-center gap-2 min-w-0">
             {selectedFolderId === "all" && (
               <>
@@ -82,8 +81,7 @@ export default function SelectFolderViewSection({
                   <>
                     <span
                       className="inline-flex items-center justify-center w-5 h-5 rounded-sm shrink-0"
-                      style={{ background: folder.color }}
-                    >
+                      style={{ background: folder.color }}>
                       <Icon className="w-3 h-3 text-white" />
                     </span>
                     <p className="truncate min-w-0">{folder.name}</p>
@@ -101,8 +99,7 @@ export default function SelectFolderViewSection({
               onClick={() => {
                 setSelectedFolderId("all");
                 setDropdownOpen(false);
-              }}
-            >
+              }}>
               <span className="inline-flex items-center justify-center w-5 h-5 bg-gray-600 rounded-sm shrink-0">
                 <Folder className="w-3 h-3 text-white" />
               </span>
@@ -115,8 +112,7 @@ export default function SelectFolderViewSection({
               onClick={() => {
                 setSelectedFolderId("none");
                 setDropdownOpen(false);
-              }}
-            >
+              }}>
               <span className="inline-flex items-center justify-center w-5 h-5 bg-gray-700 rounded-sm shrink-0">
                 <Ban className="w-3 h-3 text-white" />
               </span>
@@ -133,12 +129,10 @@ export default function SelectFolderViewSection({
                   onClick={() => {
                     setSelectedFolderId(folder.id);
                     setDropdownOpen(false);
-                  }}
-                >
+                  }}>
                   <span
                     className="inline-flex shrink-0 items-center justify-center w-5 h-5 rounded-sm"
-                    style={{ background: folder.color }}
-                  >
+                    style={{ background: folder.color }}>
                     <Icon className="w-3 h-3 text-white" />
                   </span>
                   <p className="truncate min-w-0">{folder.name}</p>
@@ -168,8 +162,7 @@ export default function SelectFolderViewSection({
                   onContextMenu={(e) => {
                     e.preventDefault();
                     handleBoardMenuClick(e, board.id);
-                  }}
-                >
+                  }}>
                   {/* Left colored bar */}
                   <div
                     className="h-6 w-2 ml-1 rounded-sm mr-2"
@@ -182,24 +175,21 @@ export default function SelectFolderViewSection({
                     onClick={(e) => {
                       e.stopPropagation();
                       startEditingIcon(board.id);
-                    }}
-                  >
+                    }}>
                     <Icon className="w-4 h-4 text-white" />
                   </div>
 
                   {/* Name */}
                   <h3
                     className="text-white text-sm truncate ml-1 mr-2 flex-1"
-                    onDoubleClick={() => startRenaming(board.id, board.name)}
-                  >
+                    onDoubleClick={() => startRenaming(board.id, board.name)}>
                     {board.name}
                   </h3>
 
                   {/* Menu button */}
                   <span
                     className="text-white p-1.5 rounded-lg hover:bg-[#3a3a3a]"
-                    onClick={(e) => handleBoardMenuClick(e, board.id)}
-                  >
+                    onClick={(e) => handleBoardMenuClick(e, board.id)}>
                     <Ellipsis className="w-4 h-4" />
                   </span>
                 </div>
@@ -222,8 +212,7 @@ export default function SelectFolderViewSection({
                     onContextMenu={(e) => {
                       e.preventDefault();
                       handleBoardMenuClick(e, board.id);
-                    }}
-                  >
+                    }}>
                     {/* Left colored bar */}
                     <div
                       className="h-6 w-2 ml-1 rounded-sm mr-2"
@@ -236,24 +225,21 @@ export default function SelectFolderViewSection({
                       onClick={(e) => {
                         e.stopPropagation();
                         startEditingIcon(board.id);
-                      }}
-                    >
+                      }}>
                       <Icon className="w-4 h-4 text-white" />
                     </div>
 
                     {/* Name */}
                     <h3
                       className="text-white text-sm truncate ml-1 mr-2 flex-1"
-                      onDoubleClick={() => startRenaming(board.id, board.name)}
-                    >
+                      onDoubleClick={() => startRenaming(board.id, board.name)}>
                       {board.name}
                     </h3>
 
                     {/* Menu button */}
                     <span
                       className="text-white p-1.5 rounded-lg hover:bg-[#3a3a3a]"
-                      onClick={(e) => handleBoardMenuClick(e, board.id)}
-                    >
+                      onClick={(e) => handleBoardMenuClick(e, board.id)}>
                       <Ellipsis className="w-4 h-4" />
                     </span>
                   </div>
@@ -279,8 +265,7 @@ export default function SelectFolderViewSection({
                     onContextMenu={(e) => {
                       e.preventDefault();
                       handleBoardMenuClick(e, board.id);
-                    }}
-                  >
+                    }}>
                     {/* Left colored bar */}
                     <div
                       className="h-6 w-2 ml-1 rounded-sm mr-2"
@@ -293,24 +278,21 @@ export default function SelectFolderViewSection({
                       onClick={(e) => {
                         e.stopPropagation();
                         startEditingIcon(board.id);
-                      }}
-                    >
+                      }}>
                       <Icon className="w-4 h-4 text-white" />
                     </div>
 
                     {/* Name */}
                     <h3
                       className="text-white text-sm truncate ml-1 mr-2 flex-1"
-                      onDoubleClick={() => startRenaming(board.id, board.name)}
-                    >
+                      onDoubleClick={() => startRenaming(board.id, board.name)}>
                       {board.name}
                     </h3>
 
                     {/* Menu button */}
                     <span
                       className="text-white p-1.5 rounded-lg hover:bg-[#3a3a3a]"
-                      onClick={(e) => handleBoardMenuClick(e, board.id)}
-                    >
+                      onClick={(e) => handleBoardMenuClick(e, board.id)}>
                       <Ellipsis className="w-4 h-4" />
                     </span>
                   </div>

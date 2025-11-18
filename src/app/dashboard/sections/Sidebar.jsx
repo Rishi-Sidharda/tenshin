@@ -46,15 +46,13 @@ export default function Sidebar({
           <button
             title="Create new Board"
             onClick={createNewBoard}
-            className="text-gray-300 cursor-pointer hover:text-[#a3a3a3] px-2"
-          >
+            className="text-gray-300 cursor-pointer hover:text-[#a3a3a3] px-2">
             <BookOpenText className="w-5 h-5" />
           </button>
           <button
             title="Create New Folder"
             onClick={openCreateFolderModal}
-            className="text-gray-300 cursor-pointer hover:text-[#a3a3a3] px-2"
-          >
+            className="text-gray-300 cursor-pointer hover:text-[#a3a3a3] px-2">
             <PackagePlus className="w-5 h-5" />
           </button>
         </div>
@@ -67,15 +65,13 @@ export default function Sidebar({
         </button>
         <button
           onClick={openCreateFolderModal}
-          className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1"
-        >
+          className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1">
           <PackagePlus className="w-4 h-4" />
           New Folder
         </button>
         <button
           onClick={createNewBoard}
-          className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1"
-        >
+          className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1">
           <BookOpenText className="w-4 h-4" />
           Create Board
         </button>
@@ -97,14 +93,12 @@ export default function Sidebar({
                 <button
                   key={board.id}
                   onClick={() => openBoard(board.id)}
-                  className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1 w-full text-left"
-                >
+                  className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1 w-full text-left">
                   <span
                     className="ml-2 text-xs px-1 py-2 rounded-md shrink-0"
                     style={{
                       background: folder ? folder.color : "#d3d3d3",
-                    }}
-                  ></span>
+                    }}></span>
                   <Icon className="w-4 h-4 shrink-0" />
                   <span className="truncate text-sm flex-1">{board.name}</span>
                   <span
@@ -112,8 +106,7 @@ export default function Sidebar({
                     onClick={(e) => {
                       e.stopPropagation(); // prevent button click
                       handleBoardMenuClick(e, board.id);
-                    }}
-                  >
+                    }}>
                     <MoreHorizontal className="w-4 h-4" />
                   </span>
                 </button>
@@ -150,8 +143,7 @@ export default function Sidebar({
                   <div
                     className={`folder-item flex items-center mb-1 text-gray-300 hover:bg-[#2a2a2a] rounded-sm px-1 w-full text-left ${
                       selectedFolderId === folder.id ? "bg-[#2a2a2a]" : ""
-                    }`}
-                  >
+                    }`}>
                     {/* Collapse/Expand Button */}
                     <button
                       aria-label={
@@ -161,8 +153,7 @@ export default function Sidebar({
                         e.stopPropagation();
                         toggleFolderCollapse(folder.id);
                       }}
-                      className="px-1 py-2 text-gray-400 hover:text-gray-200 transition-colors duration-150 rounded shrink-0"
-                    >
+                      className="px-1 py-2 text-gray-400 hover:text-gray-200 transition-colors duration-150 rounded shrink-0">
                       {isCollapsed ? (
                         <ChevronRight className="w-4 h-4" />
                       ) : (
@@ -180,12 +171,10 @@ export default function Sidebar({
                         e.preventDefault();
                         handleFolderMenuClick(e, folder.id);
                       }}
-                      className="flex items-center gap-2 w-full text-left flex-1 min-w-0"
-                    >
+                      className="flex items-center gap-2 w-full text-left flex-1 min-w-0">
                       <span
                         className="inline-flex shrink-0 items-center justify-center w-5 h-5 rounded-sm"
-                        style={{ background: folder.color }}
-                      >
+                        style={{ background: folder.color }}>
                         <Icon className="w-3 h-3 text-white" />
                       </span>
                       <span className="truncate text-sm min-w-0">
@@ -200,8 +189,7 @@ export default function Sidebar({
                         handleFolderMenuClick(e, folder.id);
                       }}
                       aria-label="Folder options"
-                      className="p-1 text-gray-400 hover:text-gray-200 rounded shrink-0"
-                    >
+                      className="p-1 text-gray-400 hover:text-gray-200 rounded shrink-0">
                       <MoreHorizontal className="w-4 h-4" />
                     </button>
                   </div>
@@ -217,8 +205,7 @@ export default function Sidebar({
                             <button
                               key={b.id ?? index}
                               onClick={() => openBoard(b.id)}
-                              className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-md p-1 w-full text-left transition-colors"
-                            >
+                              className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-md p-1 w-full text-left transition-colors">
                               {/* Board icon */}
                               <Icon className="w-4 h-4 shrink-0" />
 
@@ -233,8 +220,7 @@ export default function Sidebar({
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleBoardMenuClick(e, b.id);
-                                }}
-                              >
+                                }}>
                                 <MoreHorizontal className="w-4 h-4" />
                               </span>
                             </button>
@@ -260,8 +246,7 @@ export default function Sidebar({
               onClick={() => {
                 setSelectedFolderId(null);
               }}
-              className="text-xs pr-full text-[#a3a3a3] font-semibold mb-2 mx-1"
-            >
+              className="text-xs pr-full text-[#a3a3a3] font-semibold mb-2 mx-1">
               No Folder
             </h3>
             <div className="flex flex-col gap-1 px-1">
@@ -271,8 +256,7 @@ export default function Sidebar({
                   <button
                     key={board.id ?? index}
                     onClick={() => openBoard(board.id)}
-                    className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-md p-1 w-full text-left transition-colors"
-                  >
+                    className="group flex items-center gap-2 cursor-pointer text-gray-300 hover:bg-[#2a2a2a] rounded-md p-1 w-full text-left transition-colors">
                     {/* Board icon */}
                     <Icon className="w-4 h-4 shrink-0" />
 
@@ -287,8 +271,7 @@ export default function Sidebar({
                       onClick={(e) => {
                         e.stopPropagation();
                         handleBoardMenuClick(e, board.id);
-                      }}
-                    >
+                      }}>
                       <MoreHorizontal className="w-4 h-4" />
                     </span>
                   </button>
@@ -309,8 +292,7 @@ export default function Sidebar({
             onClick={() => {
               window.location.href = "/profile";
             }}
-            className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors"
-          >
+            className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors">
             <UserRoundCog className="w-5 h-5" />
           </button>
 
@@ -320,20 +302,8 @@ export default function Sidebar({
             onClick={() => {
               window.location.href = "/documentation";
             }}
-            className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors"
-          >
+            className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors">
             <ScrollText className="w-5 h-5" />
-          </button>
-
-          {/* Settings */}
-          <button
-            title="Settings"
-            onClick={() => {
-              // handle settings click
-            }}
-            className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors"
-          >
-            <Settings className="w-5 h-5" />
           </button>
 
           {/* Log Out */}
@@ -343,8 +313,7 @@ export default function Sidebar({
               await supabase.auth.signOut();
               window.location.href = "/signin";
             }}
-            className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors"
-          >
+            className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors">
             <LucideLogOut className="w-5 h-5" />
           </button>
 
@@ -353,8 +322,7 @@ export default function Sidebar({
             onClick={() => {
               window.location.href = "/pricing";
             }}
-            className="ml-auto cursor-pointer font-mono text-xs font-semibold text-gray-200 bg-gray-700 px-2 py-1 rounded-md"
-          >
+            className="ml-auto cursor-pointer font-mono text-xs font-semibold text-gray-200 bg-gray-700 px-2 py-1 rounded-md">
             Free Plan
           </span>
         </div>
