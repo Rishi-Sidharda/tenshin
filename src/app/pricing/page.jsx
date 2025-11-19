@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Geist_Mono } from "next/font/google";
 import { useRouter } from "next/navigation";
+import { polarPay } from "@/lib/polar";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -18,8 +19,7 @@ const CheckIcon = ({ className = "" }) => (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`w-5 h-5 ${className}`}
-  >
+    className={`w-5 h-5 ${className}`}>
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
@@ -75,24 +75,21 @@ const BillingToggle = ({ billingCycle, setBillingCycle }) => {
           style={{
             backgroundColor: activeColor,
             transform: isMonthly ? "translateX(0%)" : "translateX(100%)",
-          }}
-        ></div>
+          }}></div>
 
         {/* Buttons */}
         <button
           onClick={() => setBillingCycle("monthly")}
           className={`cursor-pointer relative w-1/2 font-mono px-3 sm:px-4 py-2 text-sm sm:text-base font-medium rounded-lg transition-transform duration-100 ${
             isMonthly ? "text-white scale-105 shadow-md" : "text-white"
-          }`}
-        >
+          }`}>
           Monthly
         </button>
         <button
           onClick={() => setBillingCycle("yearly")}
           className={`cursor-pointer relative w-1/2 font-mono px-3 sm:px-4 py-2 text-sm sm:text-base font-medium rounded-lg transition-transform duration-100 ${
             !isMonthly ? "text-white scale-105 shadow-md" : "text-white"
-          }`}
-        >
+          }`}>
           Yearly
           <span className="absolute -top-2 right-0 -mr-2 bg-[#ff8383] text-white text-xs sm:text-sm font-bold px-2 py-0.5 rounded-full">
             -20%
@@ -130,24 +127,9 @@ const PricingCard = ({ plan, billingCycle }) => {
     secondary: "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]",
   };
 
-  function polarPay(billingCycle) {
-    let productid = "";
-
-    if (billingCycle === "monthly") {
-      productid = "88d70166-86cb-4918-85e1-8103fc2469d2";
-    } else {
-      productid = "550d688e-539e-4198-88b0-000987f3fac9";
-    }
-
-    router.push(
-      `/checkout?products=${productid}&customerExternalId=oknigga&customerEmail=joel@gmail.com`
-    );
-  }
-
   return (
     <div
-      className={`rounded-2xl p-5 sm:p-6 flex flex-col h-full relative ${cardClasses} ${geistMono.variable} font-mono`}
-    >
+      className={`rounded-2xl p-5 sm:p-6 flex flex-col h-full relative ${cardClasses} ${geistMono.variable} font-mono`}>
       {isHighlighted && (
         <div className="absolute top-0 right-0 -mt-3 -mr-3 px-3 py-1 bg-[#ff8383] text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full shadow-lg">
           Most Popular
@@ -178,13 +160,12 @@ const PricingCard = ({ plan, billingCycle }) => {
       <button
         onClick={() => {
           if (planName === "pro") {
-            polarPay(billingCycle);
+            polarPay(billingCycle, "ok", "ok@gmail.com");
           } else {
             window.location.href = "/signin";
           }
         }}
-        className={`w-full py-3 sm:py-4 rounded-xl cursor-pointer font-semibold transition-colors duration-200 ${buttonClasses[buttonVariant]}`}
-      >
+        className={`w-full py-3 sm:py-4 rounded-xl cursor-pointer font-semibold transition-colors duration-200 ${buttonClasses[buttonVariant]}`}>
         {buttonText}
       </button>
     </div>
@@ -196,8 +177,7 @@ const Pricing = ({ noBg = false }) => {
 
   return (
     <div
-      className={`min-h-screen w-full relative ${noBg ? "" : "bg-[#121212]"}`}
-    >
+      className={`min-h-screen w-full relative ${noBg ? "" : "bg-[#121212]"}`}>
       <div className={`${geistMono.variable} font-sans p-4 sm:p-8`}>
         <div className="max-w-4xl mx-auto text-center">
           <header className="mb-6 sm:mb-10 pt-6">

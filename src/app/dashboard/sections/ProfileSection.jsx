@@ -5,12 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { CheckIcon, LogOut } from "lucide-react";
+import { polarPay } from "@/lib/polar";
 
 /* -----------------------------------------
    PRO FEATURES COMPONENT (embedded inline)
 ------------------------------------------ */
 
-function ProFeatures() {
+function ProFeatures({ id, email }) {
   // Check Icon component (unchanged)
   const CheckIcon = ({ className = "" }) => (
     <svg
@@ -30,12 +31,12 @@ function ProFeatures() {
 
   const prices = {
     monthly: {
-      price: "$5",
+      price: "$4.99",
       period: "/ month",
       discount: null,
     },
     yearly: {
-      price: "$49",
+      price: "$49.99",
       period: "/ year",
       discount: "(20% off)",
     },
@@ -113,7 +114,13 @@ function ProFeatures() {
       <div className="mt-8 max-w-xl">
         {/* Assuming Button is a component passed or defined elsewhere */}
         <Button
-          onClick={() => handlePlanChange("pro")}
+          onClick={() => {
+            if (billing == "monthly") {
+              polarPay("monthly", id, email);
+            } else {
+              polarPay("yearly", id, email);
+            }
+          }}
           className="w-full bg-[#ff8383] hover:bg-[#c96a6a] text-black font-bold rounded-lg shadow-md px-4 py-3 cursor-pointer">
           Upgrade to Pro
         </Button>
@@ -121,10 +128,6 @@ function ProFeatures() {
     </div>
   );
 }
-
-/* -----------------------------------------
-   MAIN PROFILE PAGE
------------------------------------------- */
 
 export default function ProfilePage({
   hideProfilePage,
@@ -170,7 +173,9 @@ export default function ProfilePage({
     profile.plan === "free" ? "text-[#ff8383]" : "text-lime-400";
 
   const manageButtonText =
-    profile.plan === "free" ? "Upgrade Plan" : "Manage Billing & Subscription";
+    profile.plan === "free"
+      ? "Upgrade Yearly"
+      : "Manage Billing & Subscription";
 
   return (
     <div className="w-full font-mono p-8 space-y-10 text-white min-h-screen">
@@ -225,9 +230,11 @@ export default function ProfilePage({
             </h2>
 
             <Button
-              onClick={() =>
-                handlePlanChange(profile.plan === "free" ? "pro" : "free")
-              }
+              onClick={() => {
+                if (profile.plan == "free") {
+                  polarPay("yearly", authUser.id, authUser.email);
+                }
+              }}
               disabled={updating}
               className="w-full bg-[#ff8383] cursor-pointer hover:bg-[#c96a6a] text-black font-bold rounded-lg shadow-md px-4 py-2 transition duration-200">
               {updating ? "Processing..." : manageButtonText}
@@ -264,7 +271,7 @@ export default function ProfilePage({
         <div className="pt-10 border-t border-[#2a2a2a] mt-10">
           <h2 className="text-2xl font-bold mb-4">Unlock These Pro Features</h2>
 
-          <ProFeatures />
+          <ProFeatures id={authUser.id} email={authUser.email} />
         </div>
       )}
     </div>
