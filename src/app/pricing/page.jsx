@@ -113,8 +113,6 @@ const PricingCard = ({ plan, billingCycle }) => {
     planName,
   } = plan;
 
-  const router = useRouter();
-
   const price = billingCycle === "monthly" ? priceMonthly : priceYearly;
   const interval = billingCycle === "monthly" ? "/month" : "/year";
 

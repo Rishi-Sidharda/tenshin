@@ -11,14 +11,15 @@ export default function CommandPallet({ onClose, floatingCardAction }) {
   const listRef = useRef(null);
 
   const commands = [
-    { label: "Go to Home", action: () => router.push("/") },
-    { label: "Open Dashboard", action: () => router.push("/dashboard") },
     { label: "Add Markdown", action: () => floatingCardAction?.() },
+    { label: "Open Dashboard", action: () => router.push("/dashboard") },
     {
       label: "Add Rectangle",
       action: () => drawExcalidrawElements("rectangle"),
     },
+    { label: "Add Line", action: () => drawExcalidrawElements("line") },
     { label: "Add Ellipse", action: () => drawExcalidrawElements("ellipse") },
+    { label: "Add Text", action: () => drawExcalidrawElements("text") },
   ];
 
   const filtered = commands.filter((cmd) =>

@@ -161,7 +161,7 @@ export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
     setShowPreview((prev) => {
       const newState = !prev;
       // Set width based on the new state
-      setContainerWidth(newState ? "w-[60%]" : "w-1/2");
+      setContainerWidth(newState ? "w-[70%]" : "w-1/2");
       return newState;
     });
   };

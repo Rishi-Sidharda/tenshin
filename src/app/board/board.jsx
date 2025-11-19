@@ -164,14 +164,17 @@ export default function Board() {
   };
 
   const handleSave = () => {
-    if (!api || !boardId || !STORAGE_KEY || !BOARD_DATA_KEY) return; // Guard against missing keys
+    // 1. EARLY EXIT & STATE SETUP
+    if (!api || !boardId || !STORAGE_KEY || !BOARD_DATA_KEY) return;
     setIsSaving(true);
 
+    // Get live data
     const elements = api.getSceneElements();
     const files = api.getFiles();
-
-    // Strip unstable junk from appState to avoid false updates
     const rawAppState = api.getAppState();
+
+    // 2. PREPARE SAFE APP STATE (Efficient filtering)
+    // Use Math.round once for scroll coordinates
     const safeAppState = {
       theme: rawAppState.theme,
       gridSize: rawAppState.gridSize,
@@ -180,36 +183,37 @@ export default function Board() {
       name: rawAppState.name,
       scrollX: Math.round(rawAppState.scrollX),
       scrollY: Math.round(rawAppState.scrollY),
-      // any other stable fields you want to keep
+      // Add other stable fields here
     };
 
-    // Use dynamic keys to load data
+    // 3. SYNCHRONOUS DATA LOAD (Unchanged Load Behavior)
+    // Note: This remains the synchronous bottleneck for large data.
     const tenshin = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
       boards: {},
       folders: {},
       ui: { collapsedFolders: {} },
-      userId: user?.id, // Ensure userId is passed if needed for future proofing
+      userId: user?.id,
     };
-
     const boardsData = JSON.parse(localStorage.getItem(BOARD_DATA_KEY)) || {};
 
+    // Use local variables for faster property access
     const oldBoard = boardsData[boardId] || {};
     const oldRegistry = oldBoard.markdown_registry || {};
 
-    // Hashing logic remains the same...
+    // 4. CALCULATE NEW HASHES (Streamlined)
     const newHashes = {
+      // Use shorter version for element hash access
       elements:
         elements.length + ":" + (elements[elements.length - 1]?.version ?? 0),
-      files: Object.keys(files).length,
-      appState:
-        safeAppState.scrollX +
-        "-" +
-        safeAppState.scrollY +
-        "-" +
-        safeAppState.theme +
-        "-" +
+      files: Object.keys(files).length.toString(), // Ensure consistent string type
+      // Use a concise pipe-separated string for AppState hash
+      appState: [
+        safeAppState.scrollX,
+        safeAppState.scrollY,
+        safeAppState.theme,
         safeAppState.viewBackgroundColor,
-      markdown: Object.keys(oldRegistry).length,
+      ].join("|"),
+      markdown: Object.keys(oldRegistry).length.toString(), // Consistent type
     };
 
     const oldHashes = {
@@ -219,58 +223,61 @@ export default function Board() {
       markdown: oldBoard.markdown_hash,
     };
 
+    // 5. CONDITIONAL UPDATE
+    let somethingChanged = false;
     const updatedBoard = { ...oldBoard };
 
     if (oldHashes.elements !== newHashes.elements) {
       updatedBoard.elements = elements;
       updatedBoard.elements_hash = newHashes.elements;
+      somethingChanged = true;
     }
 
     if (oldHashes.files !== newHashes.files) {
       updatedBoard.files = files;
       updatedBoard.files_hash = newHashes.files;
+      somethingChanged = true;
     }
 
     if (oldHashes.appState !== newHashes.appState) {
       updatedBoard.appState = safeAppState;
       updatedBoard.appState_hash = newHashes.appState;
+      somethingChanged = true;
     }
 
-    // Markdown hash only updates if registry size changes in the dashboard
+    // Markdown hash only updates if registry size changes
     if (oldHashes.markdown !== newHashes.markdown) {
+      // NOTE: This logic still copies the old registry, but we mark a change.
       updatedBoard.markdown_registry = { ...oldRegistry };
       updatedBoard.markdown_hash = newHashes.markdown;
+      somethingChanged = true;
     }
 
     boardsData[boardId] = updatedBoard;
 
-    const somethingChanged =
-      oldHashes.elements !== newHashes.elements ||
-      oldHashes.files !== newHashes.files ||
-      oldHashes.appState !== newHashes.appState ||
-      oldHashes.markdown !== newHashes.markdown;
-
+    // 6. UPDATE METADATA & SYNCHRONOUS SAVE
     if (somethingChanged) {
+      // Streamline board creation/update
       if (!tenshin.boards[boardId]) {
         tenshin.boards[boardId] = {
           id: boardId,
-          name: "Untitled Board",
+          name: updatedBoard.appState?.name || "Untitled Board",
           icon: "Brush",
         };
       }
       tenshin.boards[boardId].updatedAt = new Date().toISOString();
     }
 
-    // Set userId field in tenshin data structure
     if (user) {
       tenshin.userId = user.id;
     }
 
-    // Use dynamic keys to save data
+    // Use dynamic keys to save data - This is the remaining synchronous I/O bottleneck
     localStorage.setItem(BOARD_DATA_KEY, JSON.stringify(boardsData));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tenshin));
 
-    setTimeout(() => setIsSaving(false), 300);
+    // Remove artificial delay
+    setIsSaving(false);
   };
 
   // ----------------------------------------------------------------------
