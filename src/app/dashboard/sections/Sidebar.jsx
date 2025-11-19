@@ -31,6 +31,7 @@ export default function Sidebar({
   toggleFolderCollapse,
   selectedFolderId,
   setSelectedFolderId,
+  showProfilePage,
 }) {
   return (
     <aside className="w-64 font-outfit h-screen bg-[#202020] border-r border-[#2a2a2a] flex flex-col">
@@ -289,9 +290,7 @@ export default function Sidebar({
           {/* Profile */}
           <button
             title="Profile"
-            onClick={() => {
-              window.location.href = "/profile";
-            }}
+            onClick={showProfilePage}
             className="text-gray-300 hover:text-[#a3a3a3] p-1 cursor-pointer rounded-md transition-colors">
             <UserRoundCog className="w-5 h-5" />
           </button>

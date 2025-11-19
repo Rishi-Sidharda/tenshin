@@ -14,11 +14,17 @@ import IconPickerModal from "./modals/IconPickerModal";
 import CreateFolderModal from "./modals/CreateFolderModal";
 import EditFolderModal from "./modals/EditFolderModal";
 import DeleteFolderModal from "./modals/DeleteFolderModal";
+import ProfilePage from "./sections/ProfileSection";
 
 export default function DashboardPage() {
   const router = useRouter();
   // app state
   const [user, setUser] = useState(null);
+
+  // ADDED: State for the user's profile data from the 'profiles' table
+  const [userProfile, setUserProfile] = useState(null);
+  // ADDED: State to track if the initial user/profile data is loading
+  const [loadingUser, setLoadingUser] = useState(true);
   const [data, setData] = useState({
     folders: {},
     boards: {},
@@ -45,6 +51,8 @@ export default function DashboardPage() {
   const [editingIconId, setEditingIconId] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dropDownSelectedId, setDropDownSelectedId] = useState("all");
+
+  const [profilePageVisibility, setProfilePageVisibility] = useState(false);
 
   const [createFolderModalOpen, setCreateFolderModalOpen] = useState(false);
   const [editFolderModalOpen, setEditFolderModalOpen] = useState(false);
@@ -487,28 +495,43 @@ export default function DashboardPage() {
   // --------------------------------------------------------------------------------------------------
 
   // ----------------------- INITIAL LOAD & AUTH -----------------------
+  // ----------------------- INITIAL LOAD & AUTH -----------------------
   useEffect(() => {
     const getUser = async () => {
       try {
+        // 1. Get Auth User
         const { data } = await supabase.auth.getUser();
         const currentUser = data?.user || null;
-        setUser(currentUser);
 
-        // --- ADDED: Set user-specific storage keys ---
         if (currentUser) {
+          setUser(currentUser);
+
+          // 2. Fetch User Profile (email and plan)
+          const { data: profileData } = await supabase
+            .from("profiles")
+            .select("email, plan")
+            .eq("id", currentUser.id)
+            .single();
+
+          setUserProfile(profileData);
+
+          // 3. Set user-specific storage keys
           const userId = currentUser.id;
           SET_STORAGE_KEY(`tenshin-${userId}`);
           SET_BOARD_DATA_KEY(`boardData-${userId}`);
         } else {
+          // Redirect if not logged in
           window.location.href = "/signin";
         }
-        // ----------------------------------------------
       } catch (e) {
         console.error("supabase getUser failed", e);
+      } finally {
+        // Set loading to false once the process is complete (success or failure)
+        setLoadingUser(false);
       }
     };
     getUser();
-  }, []);
+  }, []); // Empty dependency array means this runs once on mount
 
   // --- MODIFIED: Data loading now waits for user-specific keys ---
   useEffect(() => {
@@ -603,6 +626,14 @@ export default function DashboardPage() {
     return () => document.removeEventListener("click", handleOutsideClick);
   }, [boardMenuState.open, folderMenuState.open]);
 
+  const showProfilePage = () => {
+    setProfilePageVisibility(true);
+  };
+
+  const hideProfilePage = () => {
+    setProfilePageVisibility(false);
+  };
+
   // Render
   return (
     <div className="min-h-screen bg-[#191919] text-gray-100 flex flex-col">
@@ -621,37 +652,50 @@ export default function DashboardPage() {
           toggleFolderCollapse={toggleFolderCollapse}
           selectedFolderId={selectedFolderId}
           setSelectedFolderId={setSelectedFolderId}
+          showProfilePage={showProfilePage}
         />
       </div>
       <main className="flex-1 flex">
-        {/* Main */}
+        {/* Main Content Area */}
         <div className="flex-1 ml-64 p-6 flex justify-center">
           <div className="w-full max-w-5xl mx-auto">
-            <RecentBoards
-              recentBoards={recentBoards}
-              data={data}
-              openBoard={openBoard}
-              handleBoardMenuClick={handleBoardMenuClick}
-              startEditingIcon={startEditingIcon}
-              startRenaming={startRenaming}
-              timeAgo={timeAgo}
-              ICONS={ICONS} // <-- pass icons here
-            />
+            {/* Conditional Rendering Logic 👇 */}
+            {profilePageVisibility ? (
+              // 1. If profilePageVisibility is TRUE, show only the Profile Page
+              <ProfilePage
+                hideProfilePage={hideProfilePage}
+                authUser={user}
+                initialProfile={userProfile}
+              />
+            ) : (
+              // 2. If profilePageVisibility is FALSE, show the main dashboard components
+              <>
+                <RecentBoards
+                  recentBoards={recentBoards}
+                  data={data}
+                  openBoard={openBoard}
+                  handleBoardMenuClick={handleBoardMenuClick}
+                  startEditingIcon={startEditingIcon}
+                  startRenaming={startRenaming}
+                  timeAgo={timeAgo}
+                  ICONS={ICONS}
+                />
 
-            <SelectFolderViewSection
-              data={data}
-              selectedFolderId={dropDownSelectedId}
-              setSelectedFolderId={setDropDownSelectedId}
-              dropdownOpen={dropdownOpen}
-              setDropdownOpen={setDropdownOpen}
-              ICONS={ICONS}
-              timeAgo={timeAgo}
-              startEditingIcon={startEditingIcon}
-              startRenaming={startRenaming}
-              handleBoardMenuClick={handleBoardMenuClick}
-              openBoard={openBoard}
-            />
-
+                <SelectFolderViewSection
+                  data={data}
+                  selectedFolderId={dropDownSelectedId}
+                  setSelectedFolderId={setDropDownSelectedId}
+                  dropdownOpen={dropdownOpen}
+                  setDropdownOpen={setDropdownOpen}
+                  ICONS={ICONS}
+                  timeAgo={timeAgo}
+                  startEditingIcon={startEditingIcon}
+                  startRenaming={startRenaming}
+                  handleBoardMenuClick={handleBoardMenuClick}
+                  openBoard={openBoard}
+                />
+              </>
+            )}
             {boardMenuState.open && boardMenuState.boardId && (
               <BoardMenu
                 board={data.boards[boardMenuState.boardId]}
@@ -679,8 +723,9 @@ export default function DashboardPage() {
                 confirmDeleteFolder={confirmDeleteFolder}
               />
             )}
+            {/* ... (Rest of your modals: RenameBoardModal, IconPickerModal, etc.) ... */}
+            {/* For brevity, the rest of the modals are omitted here but should be kept in your file. */}
 
-            {/* Rename Board Modal */}
             {editingBoardId && (
               <RenameBoardModal
                 newBoardName={newBoardName}
