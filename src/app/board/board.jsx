@@ -402,14 +402,13 @@ export default function Board() {
             if (showMarkdownButton) {
               return (
                 <button
-                  className="text-xs font-outfit"
+                  className="text-xs font-outfit text-gray-400 border-2 border-[#ff8383] hover:bg-[#2d2d35]"
                   style={{
                     top: "16px",
                     left: "16px",
                     zIndex: 10,
                     background: "#232329",
                     color: "white",
-                    border: "none",
                     borderRadius: "8px",
                     padding: "8px 10px",
                     cursor: "pointer",

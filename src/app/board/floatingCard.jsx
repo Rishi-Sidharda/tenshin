@@ -377,18 +377,23 @@ function sanitizeMarkdown(text) {
 
 /** initial placeholder text */
 function placeholderSafe() {
-  return `# API Overview
+  return `# Your New Draft
 
-This API allows users to authenticate, fetch resources, and update dat authenticate, fetch resources, and update dat
-
-> Hello this is a quote
-
->> ok this is a memo and you can use this and see this.
-
-After a successful authentication, you’ll receive a JSON response that includes your session details, permissions, and expiration time. If authentication fails, the response will include an appropriate error message.
+This space is ready for your content. Use it to plan, write, and organize your thoughts.
 
 ---
 
-# Sample Request
+# Suggestions
+
+1. Break your content into clear sections.
+2. Highlight important points with notes.
+3. Use separators to organize major topics.
+
+> Tip: Keep your writing simple and clear.
+
+>> Need more space? Just keep typing below.
+
+---
+
 `;
 }

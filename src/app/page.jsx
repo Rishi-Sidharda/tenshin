@@ -53,8 +53,7 @@ export default function Home() {
             onClick={(e) => {
               e.preventDefault();
               handleLinkClick("#features");
-            }}
-          >
+            }}>
             Features
           </a>
           <a
@@ -63,14 +62,12 @@ export default function Home() {
             onClick={(e) => {
               e.preventDefault();
               handleLinkClick("#pricing");
-            }}
-          >
+            }}>
             Pricing
           </a>
           <a
             href="/dashboard"
-            className="text-gray-400 hover:text-[#ff8383] transition-colors"
-          >
+            className="text-gray-400 hover:text-[#ff8383] transition-colors">
             Dashboard
           </a>
         </div>
@@ -79,8 +76,7 @@ export default function Home() {
         <div className="hidden md:block">
           <a
             href="/signin"
-            className="text-white font-semibold hover:underline transition-all"
-          >
+            className="text-white font-semibold hover:underline transition-all">
             Sign in
           </a>
         </div>
@@ -101,8 +97,7 @@ export default function Home() {
               onClick={(e) => {
                 e.preventDefault();
                 handleLinkClick("#features");
-              }}
-            >
+              }}>
               Features
             </a>
             <a
@@ -111,22 +106,19 @@ export default function Home() {
               onClick={(e) => {
                 e.preventDefault();
                 handleLinkClick("#pricing");
-              }}
-            >
+              }}>
               Pricing
             </a>
             <a
               href="/dashboard"
               className="px-6 py-2 text-gray-400 hover:text-[#ff8383] transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
+              onClick={() => setMenuOpen(false)}>
               Dashboard
             </a>
             <a
               href="/login"
               className="px-6 py-2 text-white font-semibold hover:underline transition-all"
-              onClick={() => setMenuOpen(false)}
-            >
+              onClick={() => setMenuOpen(false)}>
               Log In
             </a>
           </div>
@@ -169,14 +161,12 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6 sm:mt-10 font-mono">
           <a
             href="#get-started"
-            className="bg-white text-black rounded-full px-6 sm:px-8 py-3 sm:py-4 font-semibold text-lg hover:bg-[#ff8383] transition-colors"
-          >
+            className="bg-white text-black rounded-full px-6 sm:px-8 py-3 sm:py-4 font-semibold text-lg hover:bg-[#ff8383] transition-colors">
             Get Started
           </a>
           <a
             href="/board"
-            className="bg-gray-800 text-white rounded-full px-6 sm:px-8 py-3 sm:py-4 font-semibold text-lg hover:bg-gray-700 transition-colors"
-          >
+            className="bg-gray-800 text-white rounded-full px-6 sm:px-8 py-3 sm:py-4 font-semibold text-lg hover:bg-gray-700 transition-colors">
             Try now
           </a>
         </div>
@@ -185,8 +175,7 @@ export default function Home() {
       {/* Features Section */}
       <section
         id="features"
-        className="font-mono opacity-100 mt-[5vh] py-20 px-4 sm:px-8 max-w-6xl mx-auto"
-      >
+        className="font-mono opacity-100 mt-[5vh] py-20 px-4 sm:px-8 max-w-6xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-12">
           Exclusive Features
         </h2>
@@ -241,8 +230,7 @@ export default function Home() {
       {showScroll && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 cursor-pointer right-4 sm:right-8 p-4 rounded-full bg-[#ff8383] text-white shadow-lg hover:bg-[#ff4c4c] transition-colors z-50"
-        >
+          className="fixed bottom-8 cursor-pointer right-4 sm:right-8 p-4 rounded-full bg-[#ff8383] text-white shadow-lg hover:bg-[#ff4c4c] transition-colors z-50">
           <FaArrowUp />
         </button>
       )}
