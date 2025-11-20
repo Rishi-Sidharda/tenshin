@@ -67,7 +67,7 @@ export default function UpdatePasswordPage() {
       // Redirect the user to sign-in after a short delay
       setTimeout(() => {
         router.push("/signin");
-      }, 3000);
+      }, 5000);
     }
   };
 
@@ -96,7 +96,7 @@ export default function UpdatePasswordPage() {
               {/* === Display User Email (New) === */}
               {userEmail && (
                 <div className="mb-6 flex items-center space-x-3 rounded-md bg-[#2a2a2a] p-4 border border-[#4a4a4a]">
-                  <User className="size-5 flex-shrink-0 text-gray-400" />
+                  <User className="size-5 shrink-0 text-gray-400" />
                   <p className="text-sm font-medium text-white">
                     Resetting password for:{" "}
                     <span className="text-[#ff8383] font-bold">
