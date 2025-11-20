@@ -33,6 +33,7 @@ export default function Sidebar({
   setSelectedFolderId,
   showProfilePage,
   handleLogout,
+  handleSearch,
 }) {
   return (
     <aside className="w-64 font-outfit h-screen bg-[#202020] border-r border-[#2a2a2a] flex flex-col">
@@ -61,7 +62,11 @@ export default function Sidebar({
       </div>
 
       <nav className="flex flex-col mx-1 text-sm mb-4">
-        <button className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1">
+        <button
+          onClick={() => {
+            handleSearch();
+          }}
+          className="flex items-center gap-3 text-gray-300 hover:bg-[#2a2a2a] rounded-sm p-1">
           <Search className="w-4 h-4" />
           Search
         </button>

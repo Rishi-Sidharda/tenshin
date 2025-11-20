@@ -15,6 +15,7 @@ import CreateFolderModal from "./modals/CreateFolderModal";
 import EditFolderModal from "./modals/EditFolderModal";
 import DeleteFolderModal from "./modals/DeleteFolderModal";
 import ProfilePage from "./sections/ProfileSection";
+import BoardSearch from "./modals/BoardSearchModal";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -57,6 +58,7 @@ export default function DashboardPage() {
 
   const [createFolderModalOpen, setCreateFolderModalOpen] = useState(false);
   const [editFolderModalOpen, setEditFolderModalOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [deleteFolderConfirm, setDeleteFolderConfirm] = useState({
     open: false,
     folderId: null,
@@ -492,6 +494,10 @@ export default function DashboardPage() {
     if (selectedFolderId === id) setSelectedFolderId(null);
   };
 
+  const handleSearch = () => {
+    setSearchOpen(true);
+  };
+
   // --------------------------------------------------------------------------------------------------
 
   // ----------------------- INITIAL LOAD & AUTH -----------------------
@@ -682,6 +688,7 @@ export default function DashboardPage() {
           setSelectedFolderId={setSelectedFolderId}
           showProfilePage={showProfilePage}
           handleLogout={handleLogout}
+          handleSearch={handleSearch}
         />
       </div>
       <main className="flex-1 flex">
@@ -818,6 +825,14 @@ export default function DashboardPage() {
                   setDeleteFolderConfirm({ open: false, folderId: null })
                 }
                 deleteFolder={deleteFolder}
+              />
+            )}
+            {searchOpen && (
+              <BoardSearch
+                boards={data.boards}
+                openBoard={openBoard}
+                ICONS={ICONS}
+                onClose={() => setSearchOpen(false)}
               />
             )}
           </div>
