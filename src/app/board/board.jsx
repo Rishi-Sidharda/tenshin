@@ -30,11 +30,12 @@ const Excalidraw = dynamic(
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         Loading board...
       </div>
     ),
-  }
+  },
 );
 
 export default function Board() {
@@ -112,7 +113,7 @@ export default function Board() {
         setSelectedMarkdownGroupId,
       });
     },
-    [boardId, BOARD_DATA_KEY]
+    [boardId, BOARD_DATA_KEY],
   );
 
   // 🌟 NEW: deleteMarkdown implementation using the imported IndexedDB function
@@ -209,7 +210,8 @@ export default function Board() {
           position: "relative",
           width: "100%",
           height: "100vh",
-        }}>
+        }}
+      >
         <Excalidraw
           theme="dark"
           excalidrawAPI={(excalidrawApi) => setApi(excalidrawApi)}
@@ -235,7 +237,8 @@ export default function Board() {
                   }}
                   onClick={() => {
                     handleEditMarkdown();
-                  }}>
+                  }}
+                >
                   Markdown Options
                 </button>
               );
@@ -252,7 +255,8 @@ export default function Board() {
                   flexDirection: "column",
                   alignItems: "center",
                   pointerEvents: "none",
-                }}>
+                }}
+              >
                 <button
                   onClick={() => setShowCommandPallet(true)}
                   className="text-xs font-outfit hover:bg-[#2a2a2a]"
@@ -264,7 +268,8 @@ export default function Board() {
                     padding: "10px 10px",
                     cursor: "pointer",
                     pointerEvents: "auto",
-                  }}>
+                  }}
+                >
                   Command Palette
                 </button>
 
@@ -275,7 +280,8 @@ export default function Board() {
                     opacity: 0.6,
                     color: "white",
                     marginTop: "2px",
-                  }}>
+                  }}
+                >
                   " Ctrl + / "
                 </span>
               </div>
@@ -300,7 +306,8 @@ export default function Board() {
             boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
             transition: "all 0.2s ease-in-out",
             zIndex: 50,
-          }}>
+          }}
+        >
           {isSaving ? "✅ Saved!" : "💾 Save Board"}
         </button>
 
