@@ -181,7 +181,8 @@ export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
       <div
         ref={containerRef}
         // 3. APPLY DYNAMIC WIDTH: Use containerWidth state here
-        className={`${containerWidth} h-[90%] bg-[#101010] shadow-2xl p-8 overflow-y-auto flex flex-col scrollbar-none rounded-xl transition-all duration-300 ease-in-out`}>
+        className={`${containerWidth} h-[90%] bg-[#101010] shadow-2xl p-8 overflow-y-auto flex flex-col scrollbar-none rounded-xl transition-all duration-300 ease-in-out`}
+      >
         {/* Header: Allowed blocks + help */}
         <div className="mb-4 flex items-center justify-between">
           <div>
@@ -193,7 +194,8 @@ export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
                 <div
                   key={b.symbol}
                   className="px-3 py-1 bg-[#2f2f2f] rounded-md border border-[#3a3a3a]"
-                  title={`${b.label} — ${b.shortcut ?? ""}`}>
+                  title={`${b.label} — ${b.shortcut ?? ""}`}
+                >
                   <span className="font-medium font-outfit text-white">
                     {b.symbol}
                   </span>
@@ -215,7 +217,8 @@ export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
               className="px-3 py-1 rounded-md cursor-pointer bg-[#2e2e2e] text-[#cccccc] hover:bg-[#3a3a3a] text-sm flex  items-center gap-2 transition-colors"
               aria-pressed={showPreview}
               // The title (tooltip) clearly explains the action
-              title={showPreview ? "Hide Live Preview" : "Show Live Preview"}>
+              title={showPreview ? "Hide Live Preview" : "Show Live Preview"}
+            >
               {/* Use the Eye icon when preview is OFF, and EyeOff when preview is ON */}
               {showPreview ? (
                 <EyeOff className="w-4 h-4" />
@@ -238,7 +241,8 @@ export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
               key={b.symbol}
               onClick={() => applyBlock(b.symbol)}
               className="px-3 py-2 rounded-md cursor-pointer font-outfit bg-[#2e2e2e] text-[#cccccc] hover:bg-[#3a3a3a] text-sm"
-              aria-label={`Insert ${b.label}`}>
+              aria-label={`Insert ${b.label}`}
+            >
               {b.label}
             </button>
           ))}
@@ -246,7 +250,8 @@ export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
           <button
             onClick={() => applyBlock("para")}
             className="px-3 py-2 rounded-md cursor-pointer font-outfit bg-[#2e2e2e] text-[#cccccc] hover:bg-[#3a3a3a] text-sm"
-            aria-label="Make paragraph">
+            aria-label="Make paragraph"
+          >
             Paragraph
           </button>
         </div>
@@ -266,7 +271,8 @@ export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
             // 2. Added 'h-full' to enforce height and 'overflow-y-auto' for scrollbar
             <div
               style={{ fontFamily: "excali" }}
-              className="w-1/2 border-2 border-[#bdbdbd] p-4  text-sm scrollbar-none bg-[#0f0f0f] text-[#eaeaea] overflow-y-auto h-full min-h-0">
+              className="w-1/2 border-2 border-[#bdbdbd] p-4  text-sm scrollbar-none bg-[#0f0f0f] text-[#eaeaea] overflow-y-auto h-full min-h-0"
+            >
               <MarkdownPreview text={markdownContent} />
             </div>
           )}
@@ -278,7 +284,8 @@ export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
           <div className="flex flex-col items-start">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-md cursor-pointer bg-[#2e2e2e] text-[#cccccc] hover:bg-[#3a3a3a] text-base font-outfit flex items-center gap-2 transition-colors">
+              className="px-4 py-2 rounded-md cursor-pointer bg-[#2e2e2e] text-[#cccccc] hover:bg-[#3a3a3a] text-base font-outfit flex items-center gap-2 transition-colors"
+            >
               <X className="w-4 h-4" />
               Cancel
             </button>
@@ -290,7 +297,8 @@ export default function FloatingCard({ onClose, onSave, BOARD_DATA_KEY }) {
           <div className="flex flex-col items-center">
             <button
               onClick={handleSave}
-              className="px-4 py-2 rounded-md cursor-pointer bg-[#007acc] text-white hover:bg-[#0090ff] text-base font-outfit flex items-center gap-2 transition-colors">
+              className="px-4 py-2 rounded-md cursor-pointer bg-[#007acc] text-white hover:bg-[#0090ff] text-base font-outfit flex items-center gap-2 transition-colors"
+            >
               <Save className="w-4 h-4" />
               Add Markdown
             </button>

@@ -115,15 +115,15 @@ export async function handleChange({
   // Find first markdown element among selection
   const markdownElement = selectedElements.find((el) =>
     el.groupIds?.some(
-      (id) => id.startsWith("markdown-") && markdownRegistry[id]
-    )
+      (id) => id.startsWith("markdown-") && markdownRegistry[id],
+    ),
   );
 
   if (markdownElement) {
     setShowMarkdownButton(true);
 
     const markdownGroupId = markdownElement.groupIds.find((id) =>
-      id.startsWith("markdown-")
+      id.startsWith("markdown-"),
     );
 
     const markdownTextRaw = markdownRegistry[markdownGroupId]?.text || "";
@@ -155,7 +155,7 @@ export async function deleteMarkdown({
   // 1️⃣ Remove matching elements from the canvas
   const currentElements = api.getSceneElements();
   const updatedElements = currentElements.filter(
-    (el) => !el.groupIds?.includes(selectedMarkdownGroupId)
+    (el) => !el.groupIds?.includes(selectedMarkdownGroupId),
   );
   api.updateScene({ elements: updatedElements });
 
@@ -374,14 +374,14 @@ export function saveMarkdownToRegistry({
     })
     .then(() => {
       console.log(
-        `Markdown saved (fire-and-forget) to board ${boardId}, group: ${groupId}`
+        `Markdown saved (fire-and-forget) to board ${boardId}, group: ${groupId}`,
       );
     })
     .catch((e) => {
       // 7. Catch and log errors, but don't disrupt the main thread
       console.error(
         "Failed to save markdown to registry in IndexedDB (Fire-and-Forget Error):",
-        e
+        e,
       );
     });
 }
