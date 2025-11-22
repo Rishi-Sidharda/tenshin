@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Geist_Mono } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { polarPay } from "@/lib/polar";
+import Footer from "@/components/ui/footer";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -31,11 +32,10 @@ const plans = [
     priceYearly: "$0",
     description: "All your data stays on your machine, no account needed.",
     features: [
-      "Unlimited boards",
-      "Full Markdown support",
-      "Export (PNG, SVG, JSON, MD)",
-      "Local device storage only",
-      "with Ads in dashboard",
+      "Unlimited Boards",
+      "Full Markdown Support",
+      "Local Device Storage Only",
+      "Manual Saving only",
     ],
     isHighlighted: false,
     buttonText: "Start for Free",
@@ -44,16 +44,16 @@ const plans = [
   },
   {
     name: "Pro",
-    priceMonthly: "$4.99",
-    priceYearly: "$49",
+    priceMonthly: "$9.99",
+    priceYearly: "$99",
     description: "Access your boards from anywhere with real-time cloud sync.",
     features: [
-      "Everything in Free",
-      "Real-time cloud sync",
-      "Access from any device",
-      "Share boards via link",
-      "Priority email support",
-      "Fully Ad Free",
+      "Real-Time Cloud Sync",
+      "Access Across All Devices",
+      "Dedicated Priority Email Support",
+      "Automatic Saving (every 5 seconds)",
+      "Ad-Free Experience",
+      "Exclusive Features Coming Soon",
     ],
     isHighlighted: true,
     buttonText: "Get Started",
@@ -150,7 +150,7 @@ const PricingCard = ({ plan, billingCycle }) => {
         {features.map((feature, idx) => (
           <li key={idx} className="flex items-start text-sm sm:text-base">
             <CheckIcon className="text-[#ff8383] mr-3 mt-1 shrink-0" />
-            <span className="text-white">{feature}</span>
+            <span className="text-white text-sm mt-1">{feature}</span>
           </li>
         ))}
       </ul>
@@ -201,6 +201,7 @@ const Pricing = ({ noBg = false }) => {
           </div>
         </div>
       </div>
+      <Footer></Footer>
     </div>
   );
 };

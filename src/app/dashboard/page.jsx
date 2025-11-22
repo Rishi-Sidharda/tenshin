@@ -73,7 +73,7 @@ export default function DashboardPage() {
     color: "#8B5CF6",
   });
 
-  const [selectedFolderId, setSelectedFolderId] = useState("none");
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
   const availableIcons = Object.keys(ICONS);
 
   // Keys for IndexedDB

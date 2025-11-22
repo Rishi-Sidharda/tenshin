@@ -63,7 +63,7 @@ export default function RecentBoards({
             return (
               <div
                 key={board.id}
-                className="board-card-container w-32 h-32 bg-[#202020] hover:bg-[#2a2a2a] rounded-lg flex flex-col justify-between transition-transform transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
+                className="board-card-container w-32 h-30 bg-[#202020] hover:bg-[#2a2a2a] rounded-lg flex flex-col justify-between transition-transform transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
                 onClick={() => openBoard(board.id)}
                 onContextMenu={(e) => {
                   e.preventDefault();

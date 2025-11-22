@@ -130,7 +130,7 @@ export default function Sidebar({
         </h3>
         <div className="flex flex-col">
           {folderList.length === 0 ? (
-            <p className="text-gray-600 text-sm px-2 mt-2">No folders</p>
+            <p className="text-gray-500 italic text-sm px-2 mb-2">no folders</p>
           ) : (
             folderList.map((folder) => {
               const Icon = ICONS[folder.icon] || Folder;
