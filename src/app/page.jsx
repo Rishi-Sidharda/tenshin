@@ -118,9 +118,17 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center text-center mt-[5vh] px-4 md:px-8">
-        <h1 className="text-4xl sm:text-5xl md:text-8xl font-mono font-extrabold mb-6 leading-tight tracking-tighter bg-clip-text text-transparent animate-breathe">
-          Draw Your Thoughts <br /> Write Your Mind_
+      <section className="flex flex-col items-center justify-center text-center mt-[10vh] px-4 md:px-8">
+        <h1
+          style={{ fontFamily: "excali" }}
+          className="text-5xl sm:text-6xl md:text-8xl font-mono px-5 py-2 font-bold mb-6 leading-tight tracking-tighter bg-clip-text text-transparent animate-breathe">
+          <span className="sm:hidden">
+            Visual thinking meets structured writing.
+          </span>
+
+          <span className="hidden sm:inline">
+            Visual thinking meets <br /> structured writing.
+          </span>
         </h1>
 
         <style jsx>{`
@@ -139,26 +147,24 @@ export default function Home() {
           .animate-breathe {
             background-image: linear-gradient(90deg, white, #ff8383, white);
             background-size: 200% 200%;
-            animation: breathe 11s ease-in-out infinite;
+            animation: breathe 7s ease-in-out infinite;
           }
         `}</style>
-
-        <p className="font-mono text-gray-400 text-base sm:text-lg md:text-xl max-w-xs sm:max-w-xl md:max-w-2xl">
-          "From doodles to documentation, your ideas live here."
+        <p
+          style={{ fontFamily: "excali" }}
+          className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl max-w-sm sm:max-w-xl md:max-w-2xl mt-2">
+          "Sketch + Markdown finally together"
         </p>
-        <p className="font-mono text-gray-400 text-base sm:text-lg md:text-xl mb-8 max-w-xs sm:max-w-xl md:max-w-2xl">
-          "Excalidraw + Markdown = Tenshin [Second brain]"
-        </p>
-
-        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6 sm:mt-10 font-mono">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 font-mono">
           <a
             href="#get-started"
-            className="bg-white text-black rounded-full px-6 sm:px-8 py-3 sm:py-4 font-semibold text-lg hover:bg-[#ff8383] transition-colors">
+            className="bg-white text-black rounded-md px-6 py-2 text-lg font-semibold hover:bg-[#ff8383] transition-colors text-center">
             Get Started
           </a>
+
           <a
             href="/board"
-            className="bg-gray-800 text-white rounded-full px-6 sm:px-8 py-3 sm:py-4 font-semibold text-lg hover:bg-gray-700 transition-colors">
+            className="hidden sm:inline-flex bg-gray-800 text-white rounded-md px-6 py-2 text-lg font-semibold hover:bg-gray-700 transition-colors text-center">
             Try now
           </a>
         </div>
@@ -167,7 +173,7 @@ export default function Home() {
       {/* Features Section */}
       <section
         id="features"
-        className="font-mono opacity-100 mt-[5vh] py-20 px-4 sm:px-8 max-w-6xl mx-auto">
+        className="font-mono opacity-100 mt-[2vh] py-20 px-4 sm:px-8 max-w-6xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-12">
           Exclusive Features
         </h2>
@@ -208,14 +214,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="h-auto sm:h-screen px-4 sm:px-8">
-        <Pricing noBg />
-      </section>
-
       {/* Footer */}
       <div className="mt-20">
-        <Footer />
+        <Pricing />
       </div>
 
       {/* Scroll to Top Button */}
