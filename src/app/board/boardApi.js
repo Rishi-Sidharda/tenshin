@@ -3,11 +3,11 @@ let excalidrawApi = null;
 
 export const setExcalidrawApi = (api) => {
   if (!api) {
-    console.warn("❌ Tried to set empty Excalidraw API");
+    console.warn("Tried to set empty Excalidraw API");
     return;
   }
   excalidrawApi = api;
-  console.log("✅ Excalidraw API initialized");
+  console.log("Excalidraw API initialized");
 };
 
 export const getExcalidrawApi = () => excalidrawApi;
@@ -15,17 +15,17 @@ export const getExcalidrawApi = () => excalidrawApi;
 export const drawExcalidrawElements = async (
   component,
   markdown,
-  BOARD_DATA_KEY,
+  BOARD_DATA_KEY
 ) => {
   // Guard: must be in the browser
   if (typeof window === "undefined") {
-    console.warn("⚠️ drawExcalidrawElements called on server");
+    console.warn("drawExcalidrawElements called on server");
     return;
   }
 
   // Guard: must have API ready
   if (!excalidrawApi || typeof excalidrawApi.updateScene !== "function") {
-    console.warn("⚠️ Excalidraw API not ready yet");
+    console.warn("Excalidraw API not ready yet");
     return;
   }
 
@@ -47,7 +47,7 @@ export const drawExcalidrawElements = async (
 
     // Step 1: Now add the real markdown
     const markdownElements = convertToExcalidrawElements(
-      generateElements({ component, appState, markdownText, BOARD_DATA_KEY }),
+      generateElements({ component, appState, markdownText, BOARD_DATA_KEY })
     );
 
     // Remove fake text element by filtering it out
@@ -64,7 +64,7 @@ export const drawExcalidrawElements = async (
 
   // 🧩 Default single-phase rendering for everything else
   const newElements = convertToExcalidrawElements(
-    generateElements({ component, appState }),
+    generateElements({ component, appState })
   );
 
   excalidrawApi.updateScene({

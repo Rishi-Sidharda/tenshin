@@ -93,7 +93,7 @@ export default function SignupPage() {
       setResendMessage(`Error: ${error.message}`);
     } else {
       setResendMessage(
-        `✅ Verification email successfully resent! Check your inbox.`
+        `Verification email successfully resent! Check your inbox.`
       );
     }
   };

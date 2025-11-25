@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { CheckIcon, LogOut } from "lucide-react";
-import { polarPay } from "@/lib/polar";
 
 /* -----------------------------------------
    PRO FEATURES COMPONENT (embedded inline)
@@ -113,15 +112,7 @@ function ProFeatures({ id, email }) {
       </ul>
       <div className="mt-8 max-w-xl">
         {/* Assuming Button is a component passed or defined elsewhere */}
-        <Button
-          onClick={() => {
-            if (billing == "monthly") {
-              polarPay("monthly", id, email);
-            } else {
-              polarPay("yearly", id, email);
-            }
-          }}
-          className="w-full bg-[#ff8383] hover:bg-[#c96a6a] text-black font-bold rounded-lg shadow-md px-4 py-3 cursor-pointer">
+        <Button className="w-full bg-[#ff8383] hover:bg-[#c96a6a] text-black font-bold rounded-lg shadow-md px-4 py-3 cursor-pointer">
           Upgrade to Pro
         </Button>
       </div>
@@ -230,11 +221,7 @@ export default function ProfilePage({
             </h2>
 
             <Button
-              onClick={() => {
-                if (profile.plan == "free") {
-                  polarPay("yearly", authUser.id, authUser.email);
-                }
-              }}
+              onClick={() => {}}
               disabled={updating}
               className="w-full bg-[#ff8383] cursor-pointer hover:bg-[#c96a6a] text-black font-bold rounded-lg shadow-md px-4 py-2 transition duration-200">
               {updating ? "Processing..." : manageButtonText}
