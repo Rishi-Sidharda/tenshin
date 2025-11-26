@@ -96,7 +96,24 @@ export function generateElements({
       centerY,
       markdown_text,
       BOARD_DATA_KEY
-    ), // grouped markdown
+    ),
+    initGibber: {
+      type: "text",
+      x: 10000,
+      y: 10000,
+      text: "nandipativenkatarishisidhardabuiltthistenshins",
+      fontSize: 24,
+      width: 100,
+      height: 100,
+      fontFamily: 1,
+      textAlign: "center",
+      verticalAlign: "middle",
+      strokeColor: "transparent",
+      backgroundColor: "transparent",
+      strokeWidth: 2,
+      roughness: 1,
+      opacity: 0,
+    },
   };
 
   const element = componentsMap[component] || componentsMap.rectangle;

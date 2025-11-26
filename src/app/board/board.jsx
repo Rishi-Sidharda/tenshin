@@ -7,6 +7,7 @@ import "@excalidraw/excalidraw/index.css";
 import { setExcalidrawApi } from "./boardApi";
 import FloatingCard from "./floatingCard";
 import CommandPallet from "./commandPallet";
+import { drawExcalidrawElements } from "./boardApi";
 import FloatingEditMarkdownCard from "./floatingEditMarkdownCard";
 // Import supabase to get the current user
 import { supabase } from "@/lib/supabaseClient";
@@ -56,9 +57,46 @@ export default function Board() {
   const [selectedMarkdownText, setSelectedMarkdownText] = useState(null);
   const [selectedMarkdownGroupId, setSelectedMarkdownGroupId] = useState(null);
 
+  const [dummyMarkdownAdded, setDummyMarkdownAdded] = useState(false);
+
   // ----------------------------------------------------------------------
   // 1. AUTH & KEY SETUP
   // ----------------------------------------------------------------------
+
+  useEffect(() => {
+    if (!api || !BOARD_DATA_KEY || dummyMarkdownAdded || !isLoaded) return;
+
+    const initializeDummyMarkdown = async () => {
+      try {
+        // Small delay to ensure Excalidraw is fully initialized
+        await new Promise((resolve) => setTimeout(resolve, 20));
+
+        // Create dummy markdown off-screen
+        await drawExcalidrawElements("initGibber");
+
+        // Wait a bit, then remove all elements with "init" text
+        setTimeout(() => {
+          const currentElements = api.getSceneElements();
+          const filtered = currentElements.filter((el) => {
+            // Remove any element that's part of the dummy markdown
+            // This targets the text element and any grouped elements
+            return el.text !== "nandipativenkatarishisidhardabuiltthistenshins";
+          });
+
+          api.updateScene({
+            elements: filtered,
+          });
+
+          setDummyMarkdownAdded(true);
+        }, 50);
+      } catch (error) {
+        console.error("Error creating dummy markdown:", error);
+        setDummyMarkdownAdded(true); // Prevent infinite retries
+      }
+    };
+
+    initializeDummyMarkdown();
+  }, [api, BOARD_DATA_KEY, dummyMarkdownAdded, isLoaded]);
 
   // ✅ Get User and Set Dynamic Keys
   useEffect(() => {
