@@ -164,7 +164,7 @@ export default function Home() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 font-mono">
           <a
-            href="#get-started"
+            href="/dashboard"
             className="bg-white text-black rounded-md px-6 py-2 text-lg font-semibold hover:bg-[#ff8383] transition-colors text-center">
             Get Started
           </a>
@@ -220,11 +220,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <div className="mt-20">
-        <Pricing />
-      </div>
 
       {/* Scroll to Top Button */}
       {showScroll && (

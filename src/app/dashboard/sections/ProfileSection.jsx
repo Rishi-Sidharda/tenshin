@@ -1,6 +1,5 @@
 "use client";
 
-import { updateUserPlan } from "@/lib/dbActions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";

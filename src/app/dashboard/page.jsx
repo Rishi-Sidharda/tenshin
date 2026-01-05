@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
 import { ICONS, FOLDER_COLORS } from "@/lib/settings";
 import BoardMenu from "./menus/BoardMenu";
 import FolderMenu from "./menus/FolderMenu";
@@ -350,38 +349,18 @@ export default function DashboardPage() {
 
   // Authentication and Key Setting (Remains the same)
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        // 1. Get Auth User
-        const { data } = await supabase.auth.getUser();
-        const currentUser = data?.user || null;
+    // Set constant storage keys
+    SET_STORAGE_KEY("tenshin-static");
+    SET_BOARD_DATA_KEY("boardData-static");
 
-        if (currentUser) {
-          setUser(currentUser);
+    // Optional: if your UI expects these states to exist
+    setUser(null);
+    setUserProfile({
+      email: null,
+      plan: "free",
+    });
 
-          // 2. Fetch User Profile (email and plan)
-          const { data: profileData } = await supabase
-            .from("profiles")
-            .select("email, plan")
-            .eq("id", currentUser.id)
-            .single();
-
-          setUserProfile(profileData);
-
-          // 3. Set user-specific storage keys
-          const userId = currentUser.id;
-          SET_STORAGE_KEY(`tenshin-${userId}`);
-          SET_BOARD_DATA_KEY(`boardData-${userId}`);
-        } else {
-          window.location.href = "/signin";
-        }
-      } catch (e) {
-        console.error("supabase getUser failed", e);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-    getUser();
+    setLoadingUser(false);
   }, []);
 
   // --- MODIFIED: ASYNCHRONOUS Data loading waits for user-specific keys ---
@@ -554,11 +533,6 @@ export default function DashboardPage() {
     setProfilePageVisibility(false);
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/signin";
-  };
-
   // Render
   return (
     <div className="min-h-screen bg-[#191919] text-gray-100 flex flex-col">
@@ -601,7 +575,6 @@ export default function DashboardPage() {
           selectedFolderId={selectedFolderId}
           setSelectedFolderId={setSelectedFolderId}
           showProfilePage={showProfilePage}
-          handleLogout={handleLogout}
           handleSearch={handleSearch}
         />
       </div>
@@ -616,7 +589,6 @@ export default function DashboardPage() {
                 hideProfilePage={hideProfilePage}
                 authUser={user}
                 initialProfile={userProfile}
-                handleLogout={handleLogout}
               />
             ) : (
               // 2. If profilePageVisibility is FALSE, show the main dashboard components

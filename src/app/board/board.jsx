@@ -10,7 +10,6 @@ import CommandPallet from "./commandPallet";
 import { drawExcalidrawElements } from "./boardApi";
 import FloatingEditMarkdownCard from "./floatingEditMarkdownCard";
 // Import supabase to get the current user
-import { supabase } from "@/lib/supabaseClient";
 
 // 🌟 IMPORT NEW INDEXEDDB STORAGE FUNCTIONS
 import {
@@ -100,26 +99,11 @@ export default function Board() {
 
   // ✅ Get User and Set Dynamic Keys
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const { data } = await supabase.auth.getUser();
-        const currentUser = data?.user || null;
-        setUser(currentUser);
+    // No auth — use constant keys
+    setUser(null);
 
-        if (currentUser) {
-          const userId = currentUser.id;
-          // Set user-specific keys
-          setSTORAGE_KEY(`tenshin-${userId}`);
-          setBOARD_DATA_KEY(`boardData-${userId}`);
-        } else {
-          // Redirect if not authenticated (same as Dashboard)
-          window.location.href = "/signin";
-        }
-      } catch (e) {
-        console.error("supabase getUser failed", e);
-      }
-    };
-    getUser();
+    setSTORAGE_KEY("tenshin-static");
+    setBOARD_DATA_KEY("boardData-static");
   }, []);
 
   // ----------------------------------------------------------------------
